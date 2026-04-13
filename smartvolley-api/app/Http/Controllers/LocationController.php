@@ -12,7 +12,8 @@ class LocationController extends Controller
      */
     public function index()
     {
-        return Location::all();
+        $locations = Location::all();
+        return response()->json($locations);
     }
 
     /**
@@ -27,7 +28,10 @@ class LocationController extends Controller
 
         $location = Location::create($fields);
 
-        return $location;
+        return response()->json([
+            'message' => 'Lokacija je uspesno kreirana!',
+            'location' => $location,
+        ], 201);
     }
 
     /**
@@ -35,7 +39,7 @@ class LocationController extends Controller
      */
     public function show(Location $location)
     {
-        return $location;
+        return response()->json($location);
     }
 
     /**
@@ -44,13 +48,16 @@ class LocationController extends Controller
     public function update(Request $request, Location $location)
     {
         $fields = $request->validate([
-            'name' => 'required|string|max:255',
-            'address' => 'required|string|max:255'
+            'name' => 'sometimes|string|max:255',
+            'address' => 'sometimes|string|max:255'
         ]);
 
         $location->update($fields);
 
-        return $location;
+        return response()->json([
+            'message' => 'Podaci uspesno promenjeni!',
+            'location' => $location,
+        ]);
     }
 
     /**
@@ -60,6 +67,8 @@ class LocationController extends Controller
     {
         $location->delete();
 
-        return [ 'message' => 'The location was deleted'];
+        return response()->json([
+            'message' => 'Lokacija je uspesno obrisana!'
+        ]);
     }
 }
