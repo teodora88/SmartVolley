@@ -2,21 +2,17 @@
 
 namespace Database\Seeders;
 
-use App\Models\Location;
+use App\Models\Group;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
-class LocationSeeder extends Seeder
+class GroupSeeder extends Seeder
 {
     /**
      * Run the database seeds.
      */
     public function run(): void
     {
-        Location::create([
-            'name' => 'Kristalna dvorana',
-            'address' => 'Zrenjanin',
-        ]);
+        Group::factory(10)->create();
     }
 }
- 
