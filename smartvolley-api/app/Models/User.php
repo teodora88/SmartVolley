@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\UserRole;
 use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -12,9 +13,6 @@ class User extends Authenticatable
     /** @use HasFactory<UserFactory> */
     use HasFactory, Notifiable;
 
-    const ROLE_COACH = 0;
-    const ROLE_ADMIN = 1;
-    const ROLE_PARENT = 2;
 
     /**
      * The attributes that are mass assignable.
@@ -40,8 +38,6 @@ class User extends Authenticatable
         'remember_token',
     ];
 
-    protected $appends = ['role_name'];
-
     /**
      * Get the attributes that should be cast.
      *
@@ -51,15 +47,9 @@ class User extends Authenticatable
     {
         return [
             'password' => 'hashed',
+            'role_as' => UserRole::class,
         ];
     }
 
-    public function getRoleNameAttribute(): string
-    {
-        return match ($this->role_as) {
-            self::ROLE_ADMIN => 'Admin',
-            self::ROLE_PARENT => 'Parent',
-            default => 'Coach',
-        };
-    }
+    
 }
