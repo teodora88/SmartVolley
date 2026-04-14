@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\UserRole;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -28,7 +29,7 @@ class UserController extends Controller
             'username' => 'required|string|unique:users|max:255',
             'password' => 'required|string|min:6',
             'phone_number' => 'nullable|string',
-            'role_as' => 'required|integer',
+            'role_as' => 'required|string|in:' .implode(',', UserRole::values()),
         ]);
 
         $fields['password'] = Hash::make($fields['password']);
