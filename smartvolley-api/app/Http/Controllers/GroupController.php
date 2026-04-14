@@ -26,8 +26,8 @@ class GroupController extends Controller
         $fields = $request->validate([
             'name' => 'required|string|max:255',
             'category' => ['required', new Enum(GroupCategory::class)],
-            'location_id' => 'nullable|exists:locations,id',
-            'user_id' => 'nullable|exists:users,id',
+            'location_id' => 'required|exists:locations,id',
+            'user_id' => 'required|exists:users,id',
         ]);
 
         $group = Group::create($fields);

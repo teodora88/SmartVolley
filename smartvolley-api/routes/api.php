@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ActivityController;
 use App\Http\Controllers\GroupController;
 use App\Http\Controllers\LocationController;
 use App\Http\Controllers\UserController;
@@ -11,3 +12,5 @@ Route::apiResource('users', UserController::class);
 Route::apiResource('locations', LocationController::class);
 
 Route::apiResource('groups', GroupController::class);
+
+Route::apiResource('activity', ActivityController::class);

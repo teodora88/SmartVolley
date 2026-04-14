@@ -18,7 +18,10 @@ class Group extends Model
         'user_id',
     ];
 
-    protected $casts = [
-        'category' => GroupCategory::class,
-    ];
+    protected function casts(): array
+    {
+        return [
+            'category' => GroupCategory::class,
+        ];
+    }
 }

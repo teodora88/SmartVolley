@@ -1,0 +1,32 @@
+<?php
+
+namespace App\Models;
+
+use App\Enums\ActivityStatus;
+use App\Enums\ActivityType;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+
+class Activity extends Model
+{
+    /** @use HasFactory<\Database\Factories\ActivityFactory> */
+    use HasFactory;
+
+    protected $fillable = [
+        'date',
+        'time',
+        'type',
+        'status',
+        'other_location',
+        'group_id',
+        'location_id'
+    ];
+
+    protected function casts(): array
+    {
+        return [
+            'type' => ActivityType::class,
+            'status' => ActivityStatus::class,
+        ];
+    }
+}

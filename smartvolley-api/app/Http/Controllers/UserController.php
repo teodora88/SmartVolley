@@ -6,6 +6,7 @@ use App\Enums\UserRole;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\Rules\Enum;
 
 class UserController extends Controller
 {
@@ -29,7 +30,7 @@ class UserController extends Controller
             'username' => 'required|string|unique:users|max:255',
             'password' => 'required|string|min:6',
             'phone_number' => 'nullable|string',
-            'role_as' => 'required|string|in:' .implode(',', UserRole::values()),
+            'role_as' => ['required', new Enum(UserRole::class) ],
         ]);
 
         $fields['password'] = Hash::make($fields['password']);
