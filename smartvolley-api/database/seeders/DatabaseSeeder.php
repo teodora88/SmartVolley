@@ -19,6 +19,7 @@ class DatabaseSeeder extends Seeder
             LocationSeeder::class,
             GroupSeeder::class,
             ActivitySeeder::class,
+            MemberSeeder::class,
         ]);
         
     }

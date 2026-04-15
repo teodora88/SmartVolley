@@ -24,4 +24,9 @@ class Group extends Model
             'category' => GroupCategory::class,
         ];
     }
+
+    public function members()
+    {
+        return $this->hasMany(Member::class);
+    }
 }
