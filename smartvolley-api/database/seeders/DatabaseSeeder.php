@@ -20,6 +20,7 @@ class DatabaseSeeder extends Seeder
             GroupSeeder::class,
             ActivitySeeder::class,
             MemberSeeder::class,
+            AttendanceSeeder::class,
         ]);
         
     }
