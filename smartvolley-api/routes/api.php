@@ -5,6 +5,7 @@ use App\Http\Controllers\AttendanceController;
 use App\Http\Controllers\GroupController;
 use App\Http\Controllers\LocationController;
 use App\Http\Controllers\MemberController;
+use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
@@ -19,3 +20,5 @@ Route::apiResource('activities', ActivityController::class);
 Route::apiResource('members', MemberController::class);
 
 Route::apiResource('attendances', AttendanceController::class);
+
+Route::apiResource('payments', PaymentController::class);

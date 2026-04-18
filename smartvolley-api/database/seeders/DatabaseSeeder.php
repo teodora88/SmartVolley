@@ -21,6 +21,7 @@ class DatabaseSeeder extends Seeder
             ActivitySeeder::class,
             MemberSeeder::class,
             AttendanceSeeder::class,
+            PaymentSeeder::class,
         ]);
         
     }
