@@ -69,6 +69,6 @@ class LocationController extends Controller
 
         return response()->json([
             'message' => 'Lokacija je uspesno obrisana!'
-        ]);
+        ], 200);
     }
 }

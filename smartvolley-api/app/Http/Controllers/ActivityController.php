@@ -15,9 +15,18 @@ class ActivityController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $activities = Activity::all();
+        $activities = Activity::when($request->group_id, function ($query, $groupId) {
+            return $query->where('group_id', $groupId);
+        })
+            ->when($request->type, function ($query, $type) {
+                return $query->where('type', $type);
+            })
+            ->when($request->status, function ($query, $status) {
+                return $query->where('status', $status);
+            })
+            ->get();
 
         return response()->json($activities);
     }
@@ -50,6 +59,9 @@ class ActivityController extends Controller
 
         $activity = Activity::create($fields);
 
+        // za tip trening automatski kreiramo evidenciju prisutnosti
+        // za svakog clana grupe sa is_present = null
+        // roditelj moze unapred da opravda izostanak
         if ($activity->type === ActivityType::PRACTICE) {
             $members = Member::where('group_id', $activity->group_id)->get();
             foreach ($members as $member) {
@@ -62,7 +74,6 @@ class ActivityController extends Controller
             return response()->json([
                 'message' => 'Trening je uspesno kreiran!',
                 'activity' => $activity,
-                'attendances' => $activity->attendances,
             ], 201);
         }
 
@@ -103,6 +114,9 @@ class ActivityController extends Controller
 
         $activity->update($fields);
 
+        // kada trener zavodi prisutnost, proveravamo da li ima novih clanova
+        // koji su se pridruzili grupi nakon kreiranja treninga
+        // firstOrCreate - nam kreira novi red samo za nove clanove, nema dupliranja
         if ($activity->status === ActivityStatus::COMPLETED) {
             $members = Member::where('group_id', $activity->group_id)->get();
             foreach ($members as $member) {
@@ -130,6 +144,6 @@ class ActivityController extends Controller
 
         return response()->json([
             'message' => 'Aktivnost je uspesno obrisana!'
-        ], 204);
+        ], 200);
     }
 }

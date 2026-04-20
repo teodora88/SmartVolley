@@ -26,6 +26,9 @@ class AttendanceController extends Controller
     /**
      * Store a newly created resource in storage.
      */
+
+    // store se uglavnom kreira automatski kroz ActivityController
+    // koristi se samo u posebnim slucajevima
     public function store(Request $request)
     {
         $fields = $request->validate([
@@ -72,6 +75,9 @@ class AttendanceController extends Controller
     /**
      * Remove the specified resource from storage.
      */
+
+    // koristi se kada clan napusti grupu
+    // a nije obrisan iz sistema
     public function destroy(Attendance $attendance)
     {
         $attendance->delete();

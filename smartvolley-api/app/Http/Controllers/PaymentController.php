@@ -15,6 +15,12 @@ class PaymentController extends Controller
         $payments = Payment::when($request->member_id, function ($query, $memberId) {
             return $query->where('member_id', $memberId);
         })
+            ->when($request->has('is_paid'), function ($query) use ($request) {
+                return $query->where('is_paid', $request->is_paid);
+            })
+            ->when($request->month, function ($query, $month) {
+                return $query->where('month', $month);
+            })
             ->get();
 
         return response()->json($payments);
@@ -72,12 +78,13 @@ class PaymentController extends Controller
     /**
      * Remove the specified resource from storage.
      */
+
+    // brisanje uplata nije dozvoljeno
+    // uplata se automatski brise samo kada se obrise clan (cascadeOnDelete)
     public function destroy(Payment $payment)
     {
-        $payment->delete();
-
         return response()->json([
-            'message' => 'Uplata je uspesno obrisana!'
-        ], 200);
+            'message' => 'Brisanje uplata nije dozvoljeno!'
+        ], 403);
     }
 }

@@ -74,6 +74,6 @@ class GroupController extends Controller
 
         return response()->json([
             'message' => 'Grupa je uspesno obrisana!'
-        ], 204);
+        ], 200);
     }
 }

@@ -13,9 +13,17 @@ class UserController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $users = User::all();
+        $users = User::when($request->role_as, function ($query, $role) {
+            return $query->where('role_as', $role);
+        })
+            ->when($request->search, function ($query, $search) {
+                return $query->where('name', 'like', "%{$search}%")
+                    ->orWhere('last_name', 'like', "%{$search}%");
+            })
+            ->get();
+
         return response()->json($users);
     }
 
@@ -29,8 +37,8 @@ class UserController extends Controller
             'last_name' => 'required|string|max:255',
             'username' => 'required|string|unique:users|max:255',
             'password' => 'required|string|min:6',
-            'phone_number' => 'nullable|string',
-            'role_as' => ['required', new Enum(UserRole::class) ],
+            'phone_number' => 'required|string',
+            'role_as' => ['required', new Enum(UserRole::class)],
         ]);
 
         $fields['password'] = Hash::make($fields['password']);
@@ -59,8 +67,15 @@ class UserController extends Controller
         $fields = $request->validate([
             'name' => 'sometimes|string|max:255',
             'last_name' => 'sometimes|string|max:255',
-            'phone_number' => 'nullable|string',
+            'username' => 'sometimes|string|unique:users,username,' . $user->id . '|max:255',
+            'password' => 'sometimes|string|min:6',
+            'phone_number' => 'sometimes|string',
+            'role_as' => ['sometimes', new Enum(UserRole::class)],
         ]);
+
+        if (isset($fields['password'])) {
+            $fields['password'] = Hash::make($fields['password']);
+        }
 
         $user->update($fields);
 
@@ -79,6 +94,6 @@ class UserController extends Controller
 
         return response()->json([
             'message' => 'Korisnik je uspesno obrisan!'
-        ]);
+        ], 200);
     }
 }

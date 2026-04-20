@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('last_name');
             $table->string('username')->unique();
             $table->string('password');
-            $table->string('phone_number')->nullable();
+            $table->string('phone_number');
             $table->string('role_as')->default('coach');
             $table->rememberToken();
             $table->timestamps();

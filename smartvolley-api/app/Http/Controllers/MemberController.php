@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Attendance;
 use App\Models\Member;
 use Illuminate\Http\Request;
 
@@ -17,6 +18,10 @@ class MemberController extends Controller
         })
             ->when($request->user_id, function ($query, $userId) {
                 return $query->where('user_id', $userId);
+            })
+            ->when($request->search, function ($query, $search) {
+                return $query->where('name', 'like', "%{$search}%")
+                    ->orWhere('last_name', 'like', "%{$search}%");
             })
             ->get();
         return response()->json($members);
@@ -69,6 +74,16 @@ class MemberController extends Controller
             'user_id' => 'nullable|exists:users,id',
             'group_id' => 'nullable|exists:groups,id',
         ]);
+
+        // ako se menja grupa, obrisi predstojeće attendance redove
+        // kako član ne bi ostao na spisku stare grupe
+        if (isset($fields['group_id']) && $fields['group_id'] != $member->group_id) {
+            Attendance::where('member_id', $member->id)
+                ->whereHas('activity', function ($query) {
+                    $query->where('status', 'scheduled');
+                })
+                ->delete();
+        }
 
         $member->update($fields);
 
