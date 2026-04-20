@@ -14,4 +14,14 @@ class Location extends Model
         'name',
         'address'
     ];
+
+    public function groups()
+    {
+        return $this->hasMany(Group::class);
+    }
+
+    public function activities()
+    {
+        return $this->hasMany(Activity::class);
+    }
 }

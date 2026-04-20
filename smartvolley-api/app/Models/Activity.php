@@ -29,4 +29,19 @@ class Activity extends Model
             'status' => ActivityStatus::class,
         ];
     }
+
+    public function group()
+    {
+        return $this->belongsTo(Group::class);
+    }
+
+    public function location()
+    {
+        return $this->belongsTo(Location::class);
+    }
+
+    public function attendances()
+    {
+        return $this->hasMany(Attendance::class);
+    }
 }
