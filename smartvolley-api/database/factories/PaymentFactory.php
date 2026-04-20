@@ -19,10 +19,16 @@ class PaymentFactory extends Factory
     public function definition(): array
     {
         return [
-            'month' => fake()->date('m-Y'),
-            'price' => fake()->randomFloat(2, 1500, 3000),
+            'month' => fake()->dateTimeBetween('2026-01-01', '2026-04-20')->format('m-Y'),
+            'price' => fake()->randomElement([
+                2600,
+                2600,
+                2600,
+                2600,
+                1300,
+            ]),
             'is_paid' => $is_paid = fake()->boolean(70),
-            'date' => $is_paid ? fake()->date() : null,
+            'date' => $is_paid ? fake()->dateTimeBetween('2026-01-01', '2026-04-20')->format('Y-m-d') : null,
             'member_id' => Member::pluck('id')->random(),
         ];
     }

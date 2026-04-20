@@ -22,13 +22,35 @@ class ActivityFactory extends Factory
     public function definition(): array
     {
         return [
-            'date' => fake()->date(), 
-            'time' => fake()->time(),
-            'type' => fake()->randomElement(ActivityType::cases()),
-            'status' => fake()-> randomElement(ActivityStatus::cases()),
+            'date' => fake()->dateTimeBetween('2026-01-01', '2026-04-20')->format('Y-m-d'),
+            'time' => fake()->randomElement([
+                '16:00:00',
+                '17:30:00',
+                '19:00:00',
+            ]),
+            'type' => $type = fake()->randomElement([
+                ActivityType::PRACTICE,
+                ActivityType::PRACTICE,
+                ActivityType::PRACTICE,
+                ActivityType::PRACTICE,
+                ActivityType::PRACTICE,
+                ActivityType::PRACTICE,
+                ActivityType::PRACTICE,
+                ActivityType::GAME,
+                ActivityType::GAME,
+                ActivityType::TOURNAMENT,
+            ]),
+            'status' => fake()->randomElement([
+                ActivityStatus::COMPLETED,
+                ActivityStatus::COMPLETED,
+                ActivityStatus::COMPLETED,
+                ActivityStatus::COMPLETED,
+                ActivityStatus::SCHEDULED,
+                ActivityStatus::CANCELED,
+            ]),
             'group_id' => Group::pluck('id')->random(),
-            'location_id' => $locationId = fake()->boolean() ? Location::pluck('id')->random() : null,
-            'other_location' => $locationId ? null : fake()->streetAddress(),
+            'location_id' => $type === ActivityType::PRACTICE ? Location::pluck('id')->random() : null,
+            'other_location' => $type !== ActivityType::PRACTICE ? fake()->streetAddress() : null,
         ];
     }
 }

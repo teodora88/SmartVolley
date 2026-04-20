@@ -19,11 +19,13 @@ class AttendanceFactory extends Factory
      */
     public function definition(): array
     {
+        $activity = Activity::where('type', 'practice')->inRandomOrder()->first();
+
         return [
-            'is_present' => $is_present = fake()->boolean(),
+            'is_present' => $is_present = fake()->boolean(80), 
             'excuse' => $is_present ? null : fake()->optional()->sentence(),
-            'activity_id' => Activity::pluck('id')->random(),
-            'member_id' => Member::pluck('id')->random(),
+            'activity_id' => $activity->id,
+            'member_id' => Member::where('group_id', $activity->group_id)->pluck('id')->random(),
         ];
     }
 }

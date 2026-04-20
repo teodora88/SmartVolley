@@ -22,6 +22,7 @@ class UserSeeder extends Seeder
             'role_as' => UserRole::ADMIN,
         ]);
 
-        User::factory(12)->create();
+        User::factory(3)->create(['role_as' => UserRole::COACH]);
+        User::factory(60)->create(['role_as' => UserRole::PARENT]);
     }
 }

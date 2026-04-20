@@ -2,7 +2,7 @@
 
 namespace Database\Factories;
 
-use App\Models\Group;
+//use App\Models\Group;
 use App\Models\Member;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
@@ -20,14 +20,14 @@ class MemberFactory extends Factory
     public function definition(): array
     {
         return [
-            'name' => fake()->firstName(),
+            'name' => fake()->firstName('female'),
             'last_name'=> fake()->lastName(),
-            'birthday' => fake()->date(),
-            'height' => fake()->randomFloat(2, 120, 200),
-            'weight' => fake()->randomFloat(2, 30, 100),
+            'birthday' => fake()->dateTimeBetween('2012-01-01', '2019-12-31')->format('Y-m-d'),
+            'height' => fake()->randomFloat(2, 130, 175),
+            'weight' => fake()->randomFloat(2, 25, 65),
             'note' =>fake()->optional()->sentence(),
-            'user_id' => User::pluck('id')->random(),
-            'group_id' => Group::pluck('id')->random(),
+            'user_id' => User::where('role_as', 'parent')->pluck('id')->random(),
+            //'group_id' => Group::pluck('id')->random(),
         ];
     }
 }

@@ -13,11 +13,13 @@ class LocationSeeder extends Seeder
     public function run(): void
     {
         Location::create([
-            'name' => 'Kristalna dvorana',
-            'address' => 'Zrenjanin',
+            'name' => 'OS Nikola Tesla',
+            'address' => 'Banatsko Karadjordjevo',
         ]);
 
-        Location::factory(7)->create();
+        Location::create([
+            'name' => 'OS Milos Crnjanski',
+            'address' => 'Srpski Itebej',
+        ]);
     }
 }
- 

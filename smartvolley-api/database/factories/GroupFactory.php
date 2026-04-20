@@ -23,7 +23,7 @@ class GroupFactory extends Factory
         return [
             'name' => fake()->word(),
             'category' => fake()->randomElement(GroupCategory::cases()),
-            'user_id' => User::pluck('id')->random(),
+            'user_id' => User::where('role_as', 'coach')->pluck('id')->random(),
             'location_id' => Location::pluck('id')->random(),
 
         ];
