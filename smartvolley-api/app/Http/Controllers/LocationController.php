@@ -65,10 +65,15 @@ class LocationController extends Controller
      */
     public function destroy(Location $location)
     {
-        $location->delete();
-
-        return response()->json([
-            'message' => 'Lokacija je uspesno obrisana!'
-        ], 200);
+        try {
+            $location->delete();
+            return response()->json([
+                'message' => 'Lokacija je uspesno obrisana!'
+            ], 200);
+        } catch (\Illuminate\Database\QueryException $e) {
+            return response()->json([
+                'message' => 'Lokacija ne moze biti obrisana jer ima povezane aktivnosti!'
+            ], 409);
+        }
     }
 }

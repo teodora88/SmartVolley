@@ -19,6 +19,7 @@ class UserSeeder extends Seeder
             'last_name' => 'Nikolic',
             'username' => 'teodora_admin',
             'password' => Hash::make('admin123'),
+            'phone_number' => '+381678787878',
             'role_as' => UserRole::ADMIN,
         ]);
 

@@ -90,10 +90,15 @@ class UserController extends Controller
      */
     public function destroy(User $user)
     {
-        $user->delete();
-
-        return response()->json([
-            'message' => 'Korisnik je uspesno obrisan!'
-        ], 200);
+        try {
+            $user->delete();
+            return response()->json([
+                'message' => 'Korisnik je uspesno obrisan!'
+            ], 200);
+        } catch (\Illuminate\Database\QueryException $e) {
+            return response()->json([
+                'message' => 'Korisnik ne moze biti obrisan jer ima povezane clanove!'
+            ], 409);
+        }
     }
 }

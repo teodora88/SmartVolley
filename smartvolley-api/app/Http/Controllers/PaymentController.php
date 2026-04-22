@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Member;
 use App\Models\Payment;
 use Illuminate\Http\Request;
 
@@ -86,5 +87,41 @@ class PaymentController extends Controller
         return response()->json([
             'message' => 'Brisanje uplata nije dozvoljeno!'
         ], 403);
+    }
+
+    public function createMonthlyPayments(Request $request)
+    {
+        $fields = $request->validate([
+            'month' => 'required|string|date_format:m-Y',
+            'price' => 'required|numeric|min:0',
+            'group_id' => 'required|exists:groups,id',
+        ]);
+
+        // proveri da li vec postoje uplate za taj mesec i grupu
+        $existing = Payment::whereHas('member', function ($query) use ($fields) {
+            $query->where('group_id', $fields['group_id']);
+        })->where('month', $fields['month'])->exists();
+
+        if ($existing) {
+            return response()->json([
+                'message' => 'Uplate za ovaj mesec vec postoje!'
+            ], 409);
+        }
+
+        // kreiraj uplatu za svakog clana grupe
+        $members = Member::where('group_id', $fields['group_id'])->get();
+        foreach ($members as $member) {
+            Payment::create([
+                'month' => $fields['month'],
+                'price' => $fields['price'],
+                'is_paid' => false,
+                'date' => null,
+                'member_id' => $member->id,
+            ]);
+        }
+
+        return response()->json([
+            'message' => 'Clanarine su uspesno kreirane za sve clanove grupe!',
+        ], 201);
     }
 }

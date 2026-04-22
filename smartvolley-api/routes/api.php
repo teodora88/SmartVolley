@@ -21,4 +21,5 @@ Route::apiResource('members', MemberController::class);
 
 Route::apiResource('attendances', AttendanceController::class);
 
+Route::post('payments/monthly', [PaymentController::class, 'createMonthlyPayments']);
 Route::apiResource('payments', PaymentController::class);
