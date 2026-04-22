@@ -25,7 +25,6 @@ class MemberFactory extends Factory
             'birthday' => fake()->dateTimeBetween('2012-01-01', '2019-12-31')->format('Y-m-d'),
             'height' => fake()->randomFloat(2, 130, 175),
             'weight' => fake()->randomFloat(2, 25, 65),
-            'note' =>fake()->optional()->sentence(),
             'user_id' => User::where('role_as', 'parent')->pluck('id')->random(),
             //'group_id' => Group::pluck('id')->random(),
         ];

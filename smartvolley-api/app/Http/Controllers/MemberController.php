@@ -38,7 +38,6 @@ class MemberController extends Controller
             'birthday' => 'nullable|date',
             'height' => 'nullable|numeric|min:50|max:250',
             'weight' => 'nullable|numeric|min:10|max:200',
-            'note' => 'nullable|string',
             'user_id' => 'nullable|exists:users,id',
             'group_id' => 'nullable|exists:groups,id',
         ]);
@@ -70,7 +69,6 @@ class MemberController extends Controller
             'birthday' => 'nullable|date',
             'height' => 'nullable|numeric|min:50|max:250',
             'weight' => 'nullable|numeric|min:10|max:200',
-            'note' => 'nullable|string',
             'user_id' => 'nullable|exists:users,id',
             'group_id' => 'nullable|exists:groups,id',
         ]);

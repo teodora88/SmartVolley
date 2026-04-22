@@ -18,7 +18,6 @@ return new class extends Migration
             $table->date('birthday')->nullable();
             $table->decimal('height', 5, 2)->nullable();
             $table->decimal('weight', 5, 2)->nullable();
-            $table->text('note')->nullable();
 
             $table->foreignId('user_id')->nullable()->constrained()->restrictOnDelete();
             $table->foreignId('group_id')->nullable()->constrained()->nullOnDelete();

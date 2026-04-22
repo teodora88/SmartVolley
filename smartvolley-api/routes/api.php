@@ -5,6 +5,7 @@ use App\Http\Controllers\AttendanceController;
 use App\Http\Controllers\GroupController;
 use App\Http\Controllers\LocationController;
 use App\Http\Controllers\MemberController;
+use App\Http\Controllers\MemberNoteController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
@@ -23,3 +24,5 @@ Route::apiResource('attendances', AttendanceController::class);
 
 Route::post('payments/monthly', [PaymentController::class, 'createMonthlyPayments']);
 Route::apiResource('payments', PaymentController::class);
+
+Route::apiResource('member-notes', MemberNoteController::class);

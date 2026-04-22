@@ -22,6 +22,7 @@ class DatabaseSeeder extends Seeder
             MemberSeeder::class,
             AttendanceSeeder::class,
             PaymentSeeder::class,
+            MemberNoteSeeder::class,
         ]);
         
     }

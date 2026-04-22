@@ -16,7 +16,6 @@ class Member extends Model
         'birthday',
         'height',
         'weight',
-        'note',
         'user_id',
         'group_id',
     ];
@@ -39,5 +38,10 @@ class Member extends Model
     public function attendances()
     {
         return $this->hasMany(Attendance::class);
+    }
+
+    public function memberNotes()
+    {
+        return $this->hasMany(MemberNote::class);
     }
 }
