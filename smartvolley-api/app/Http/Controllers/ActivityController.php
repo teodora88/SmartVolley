@@ -7,6 +7,7 @@ use App\Enums\ActivityType;
 use App\Models\Activity;
 use App\Models\Attendance;
 use App\Models\Member;
+use App\Models\TournamentRegistration;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rules\Enum;
 
@@ -75,6 +76,19 @@ class ActivityController extends Controller
                 'message' => 'Trening je uspesno kreiran!',
                 'activity' => $activity,
             ], 201);
+        }
+
+        // za tip turnir automatski kreiramo registraziju za turnir
+        // roditelj vrsi prijavu promenom is_registered na true
+        if ($activity->type === ActivityType::TOURNAMENT) {
+            $members = Member::where('group_id', $activity->group_id)->get();
+            foreach ($members as $member) {
+                TournamentRegistration::create([
+                    'activity_id' => $activity->id,
+                    'member_id' => $member->id,
+                    'is_registered' => null,
+                ]);
+            }
         }
 
         return response()->json([

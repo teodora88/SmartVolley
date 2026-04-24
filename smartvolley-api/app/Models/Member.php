@@ -44,4 +44,9 @@ class Member extends Model
     {
         return $this->hasMany(MemberNote::class);
     }
+
+    public function tournamentRegistrations()
+    {
+        return $this->hasMany(TournamentRegistration::class);
+    }
 }

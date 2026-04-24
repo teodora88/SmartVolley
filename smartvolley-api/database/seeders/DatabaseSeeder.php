@@ -23,6 +23,7 @@ class DatabaseSeeder extends Seeder
             AttendanceSeeder::class,
             PaymentSeeder::class,
             MemberNoteSeeder::class,
+            TournamentRegistrationSeeder::class,
         ]);
         
     }

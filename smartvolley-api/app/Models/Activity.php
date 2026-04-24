@@ -44,4 +44,9 @@ class Activity extends Model
     {
         return $this->hasMany(Attendance::class);
     }
+
+    public function tournamentRegistrations()
+    {
+        return $this->hasMany(TournamentRegistration::class);
+    }
 }
