@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\UserRole;
 use App\Models\Attendance;
+use App\Models\Group;
 use App\Models\Member;
 use Illuminate\Http\Request;
 
@@ -13,17 +15,26 @@ class MemberController extends Controller
      */
     public function index(Request $request)
     {
+        if ($request->user()->role_as === UserRole::ADMIN) {
+            return response()->json([
+                'message' => 'Nemate pristup ovoj akciji!'
+            ], 403);
+        }
+
+        if ($request->user()->role_as === UserRole::PARENT) {
+            $members = Member::where('user_id', $request->user()->id)->get();
+            return response()->json($members);
+        }
+
         $members = Member::when($request->group_id, function ($query, $groupId) {
             return $query->where('group_id', $groupId);
         })
-            ->when($request->user_id, function ($query, $userId) {
-                return $query->where('user_id', $userId);
-            })
             ->when($request->search, function ($query, $search) {
                 return $query->where('name', 'like', "%{$search}%")
                     ->orWhere('last_name', 'like', "%{$search}%");
             })
             ->get();
+
         return response()->json($members);
     }
 
@@ -32,6 +43,12 @@ class MemberController extends Controller
      */
     public function store(Request $request)
     {
+        if ($request->user()->role_as !== UserRole::COACH) {
+            return response()->json([
+                'message' => 'Nemate pristup ovoj akciji!'
+            ], 403);
+        }
+
         $fields = $request->validate([
             'name' => 'required|string|max:255',
             'last_name' => 'required|string|max:255',
@@ -53,8 +70,20 @@ class MemberController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Member $member)
+    public function show(Member $member, Request $request)
     {
+        if ($request->user()->role_as === UserRole::ADMIN) {
+            return response()->json([
+                'message' => 'Nemate pristup ovoj akciji!'
+            ], 403);
+        }
+
+        if ($request->user()->role_as === UserRole::PARENT && $member->user_id !== $request->user()->id) {
+            return response()->json([
+                'message' => 'Nemate pristup ovoj akciji!'
+            ], 403);
+        }
+
         return response()->json($member);
     }
 
@@ -63,6 +92,40 @@ class MemberController extends Controller
      */
     public function update(Request $request, Member $member)
     {
+        if ($request->user()->role_as === UserRole::ADMIN) {
+            return response()->json([
+                'message' => 'Nemate pristup ovoj akciji!'
+            ], 403);
+        }
+
+        if ($request->user()->role_as === UserRole::PARENT) {
+            if ($member->user_id !== $request->user()->id) {
+                return response()->json([
+                    'message' => 'Nemate pristup ovoj akciji!'
+                ], 403);
+            }
+
+            $fields = $request->validate([
+                'birthday' => 'nullable|date',
+                'height' => 'nullable|numeric|min:50|max:250',
+                'weight' => 'nullable|numeric|min:10|max:200',
+            ]);
+
+            $member->update($fields);
+
+            return response()->json([
+                'message' => 'Podaci uspesno promenjeni!',
+                'member' => $member,
+            ]);
+        }
+
+        $coachGroupIds = Group::where('user_id', $request->user()->id)->pluck('id');
+        if (!$coachGroupIds->contains($member->group_id)) {
+            return response()->json([
+                'message' => 'Nemate pristup ovoj akciji!'
+            ], 403);
+        }
+
         $fields = $request->validate([
             'name' => 'sometimes|string|max:255',
             'last_name' => 'sometimes|string|max:255',
@@ -94,8 +157,22 @@ class MemberController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Member $member)
+    public function destroy(Member $member, Request $request)
     {
+
+        if ($request->user()->role_as !== UserRole::COACH) {
+            return response()->json([
+                'message' => 'Nemate pristup ovoj akciji!'
+            ], 403);
+        }
+
+        $coachGroupIds = Group::where('user_id', $request->user()->id)->pluck('id');
+        if (!$coachGroupIds->contains($member->group_id)) {
+            return response()->json([
+                'message' => 'Nemate pristup ovoj akciji!'
+            ], 403);
+        }
+
         $member->delete();
 
         return response()->json([

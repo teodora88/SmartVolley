@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\UserRole;
 use App\Models\Location;
 use Illuminate\Http\Request;
 
@@ -10,8 +11,14 @@ class LocationController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
+        if ($request->user()->role_as === UserRole::ADMIN) {
+            return response()->json([
+                'message' => 'Nemate pristup ovoj akciji!'
+            ], 403);
+        }
+
         $locations = Location::all();
         return response()->json($locations);
     }
@@ -21,6 +28,13 @@ class LocationController extends Controller
      */
     public function store(Request $request)
     {
+
+        if ($request->user()->role_as !== UserRole::COACH) {
+            return response()->json([
+                'message' => 'Nemate pristup ovoj akciji!'
+            ], 403);
+        }
+
         $fields = $request->validate([
             'name' => 'required|string|max:255',
             'address' => 'required|string|max:255'
@@ -37,8 +51,14 @@ class LocationController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Location $location)
+    public function show(Location $location, Request $request)
     {
+        if ($request->user()->role_as === UserRole::ADMIN) {
+            return response()->json([
+                'message' => 'Nemate pristup ovoj akciji!'
+            ], 403);
+        }
+
         return response()->json($location);
     }
 
@@ -47,6 +67,12 @@ class LocationController extends Controller
      */
     public function update(Request $request, Location $location)
     {
+        if ($request->user()->role_as !== UserRole::COACH) {
+            return response()->json([
+                'message' => 'Nemate pristup ovoj akciji!'
+            ], 403);
+        }
+
         $fields = $request->validate([
             'name' => 'sometimes|string|max:255',
             'address' => 'sometimes|string|max:255'
@@ -63,8 +89,14 @@ class LocationController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Location $location)
+    public function destroy(Location $location, Request $request)
     {
+        if ($request->user()->role_as !== UserRole::COACH) {
+            return response()->json([
+                'message' => 'Nemate pristup ovoj akciji!'
+            ], 403);
+        }
+
         try {
             $location->delete();
             return response()->json([

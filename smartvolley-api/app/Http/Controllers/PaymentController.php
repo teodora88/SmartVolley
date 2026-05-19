@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\UserRole;
+use App\Models\Group;
 use App\Models\Member;
 use App\Models\Payment;
 use Illuminate\Http\Request;
@@ -13,9 +15,43 @@ class PaymentController extends Controller
      */
     public function index(Request $request)
     {
-        $payments = Payment::when($request->member_id, function ($query, $memberId) {
-            return $query->where('member_id', $memberId);
-        })
+        if ($request->user()->role_as === UserRole::ADMIN) {
+            return response()->json([
+                'message' => 'Nemate pristup ovoj akciji!'
+            ], 403);
+        }
+
+        if ($request->user()->role_as === UserRole::PARENT) {
+            $memberIds = Member::where('user_id', $request->user()->id)->pluck('id');
+
+            if ($request->member_id && !$memberIds->contains($request->member_id)) {
+                return response()->json([
+                    'message' => 'Nemate pristup ovoj akciji!'
+                ], 403);
+            }
+
+            $payments = Payment::whereIn('member_id', $memberIds)
+                ->when($request->member_id, function ($query, $memberId) {
+                    return $query->where('member_id', $memberId);
+                })
+                ->when($request->has('is_paid'), function ($query) use ($request) {
+                    return $query->where('is_paid', $request->is_paid);
+                })
+                ->when($request->month, function ($query, $month) {
+                    return $query->where('month', $month);
+                })
+                ->get();
+
+            return response()->json($payments);
+        }
+
+        $coachGroupIds = Group::where('user_id', $request->user()->id)->pluck('id');
+        $memberIds = Member::whereIn('group_id', $coachGroupIds)->pluck('id');
+
+        $payments = Payment::whereIn('member_id', $memberIds)
+            ->when($request->member_id, function ($query, $memberId) {
+                return $query->where('member_id', $memberId);
+            })
             ->when($request->has('is_paid'), function ($query) use ($request) {
                 return $query->where('is_paid', $request->is_paid);
             })
@@ -32,6 +68,21 @@ class PaymentController extends Controller
      */
     public function store(Request $request)
     {
+        if ($request->user()->role_as !== UserRole::COACH) {
+            return response()->json([
+                'message' => 'Nemate pristup ovoj akciji!'
+            ], 403);
+        }
+
+        $coachGroupIds = Group::where('user_id', $request->user()->id)->pluck('id');
+        $memberIds = Member::whereIn('group_id', $coachGroupIds)->pluck('id');
+
+        if ($request->member_id && !$memberIds->contains($request->member_id)) {
+            return response()->json([
+                'message' => 'Nemate pristup ovoj akciji!'
+            ], 403);
+        }
+
         $fields = $request->validate([
             'month' => 'required|string|date_format:m-Y',
             'price' => 'required|numeric|min:0',
@@ -51,8 +102,35 @@ class PaymentController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Payment $payment)
+    public function show(Payment $payment, Request $request)
     {
+        if ($request->user()->role_as === UserRole::ADMIN) {
+            return response()->json([
+                'message' => 'Nemate pristup ovoj akciji!'
+            ], 403);
+        }
+
+        if ($request->user()->role_as === UserRole::PARENT) {
+            $memberIds = Member::where('user_id', $request->user()->id)->pluck('id');
+
+            if (!$memberIds->contains($payment->member_id)) {
+                return response()->json([
+                    'message' => 'Nemate pristup ovoj akciji!'
+                ], 403);
+            }
+        }
+
+        if ($request->user()->role_as === UserRole::COACH) {
+            $coachGroupIds = Group::where('user_id', $request->user()->id)->pluck('id');
+            $memberIds = Member::whereIn('group_id', $coachGroupIds)->pluck('id');
+
+            if (!$memberIds->contains($payment->member_id)) {
+                return response()->json([
+                    'message' => 'Nemate pristup ovoj akciji!'
+                ], 403);
+            }
+        }
+
         return response()->json($payment);
     }
 
@@ -61,6 +139,21 @@ class PaymentController extends Controller
      */
     public function update(Request $request, Payment $payment)
     {
+        if ($request->user()->role_as !== UserRole::COACH) {
+            return response()->json([
+                'message' => 'Nemate pristup ovoj akciji!'
+            ], 403);
+        }
+
+        $coachGroupIds = Group::where('user_id', $request->user()->id)->pluck('id');
+        $memberIds = Member::whereIn('group_id', $coachGroupIds)->pluck('id');
+
+        if (!$memberIds->contains($payment->member_id)) {
+            return response()->json([
+                'message' => 'Nemate pristup ovoj akciji!'
+            ], 403);
+        }
+
         $fields = $request->validate([
             'month' => 'sometimes|string|date_format:m-Y',
             'price' => 'sometimes|numeric|min:0',
@@ -91,6 +184,19 @@ class PaymentController extends Controller
 
     public function createMonthlyPayments(Request $request)
     {
+        if ($request->user()->role_as !== UserRole::COACH) {
+            return response()->json([
+                'message' => 'Nemate pristup ovoj akciji!'
+            ], 403);
+        }
+
+        $coachGroupIds = Group::where('user_id', $request->user()->id)->pluck('id');
+        if ($request->group_id && !$coachGroupIds->contains($request->group_id)) {
+            return response()->json([
+                'message' => 'Nemate pristup ovoj akciji!'
+            ], 403);
+        }
+
         $fields = $request->validate([
             'month' => 'required|string|date_format:m-Y',
             'price' => 'required|numeric|min:0',

@@ -4,8 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Enums\ActivityStatus;
 use App\Enums\ActivityType;
+use App\Enums\UserRole;
 use App\Models\Activity;
 use App\Models\Attendance;
+use App\Models\Group;
 use App\Models\Member;
 use App\Models\TournamentRegistration;
 use Illuminate\Http\Request;
@@ -18,9 +20,33 @@ class ActivityController extends Controller
      */
     public function index(Request $request)
     {
-        $activities = Activity::when($request->group_id, function ($query, $groupId) {
-            return $query->where('group_id', $groupId);
-        })
+        if ($request->user()->role_as === UserRole::ADMIN) {
+            return response()->json([
+                'message' => 'Nemate pristup ovoj akciji!'
+            ], 403);
+        }
+
+        if ($request->user()->role_as === UserRole::PARENT) {
+            $groupIds = Member::where('user_id', $request->user()->id)->pluck('group_id');
+
+            $activities = Activity::whereIn('group_id', $groupIds)
+                ->when($request->type, function ($query, $type) {
+                    return $query->where('type', $type);
+                })
+                ->when($request->status, function ($query, $status) {
+                    return $query->where('status', $status);
+                })
+                ->get();
+
+            return response()->json($activities);
+        }
+
+        $coachGroupIds = Group::where('user_id', $request->user()->id)->pluck('id');
+
+        $activities = Activity::whereIn('group_id', $coachGroupIds)
+            ->when($request->group_id, function ($query, $groupId) {
+                return $query->where('group_id', $groupId);
+            })
             ->when($request->type, function ($query, $type) {
                 return $query->where('type', $type);
             })
@@ -37,6 +63,19 @@ class ActivityController extends Controller
      */
     public function store(Request $request)
     {
+        if ($request->user()->role_as !== UserRole::COACH) {
+            return response()->json([
+                'message' => 'Nemate pristup ovoj akciji!'
+            ], 403);
+        }
+
+        $coachGroupIds = Group::where('user_id', $request->user()->id)->pluck('id');
+        if ($request->group_id && !$coachGroupIds->contains($request->group_id)) {
+            return response()->json([
+                'message' => 'Nemate pristup ovoj akciji!'
+            ], 403);
+        }
+
         $fields = $request->validate([
             'date' => 'required|date',
             'time' => 'required|date_format:H:i:s',
@@ -100,8 +139,34 @@ class ActivityController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Activity $activity)
+    public function show(Activity $activity, Request $request)
     {
+        if ($request->user()->role_as === UserRole::ADMIN) {
+            return response()->json([
+                'message' => 'Nemate pristup ovoj akciji!'
+            ], 403);
+        }
+
+        if ($request->user()->role_as === UserRole::PARENT) {
+            $groupIds = Member::where('user_id', $request->user()->id)->pluck('group_id');
+
+            if (!$groupIds->contains($activity->group_id)) {
+                return response()->json([
+                    'message' => 'Nemate pristup ovoj akciji!'
+                ], 403);
+            }
+        }
+
+        if ($request->user()->role_as === UserRole::COACH) {
+            $coachGroupIds = Group::where('user_id', $request->user()->id)->pluck('id');
+
+            if (!$coachGroupIds->contains($activity->group_id)) {
+                return response()->json([
+                    'message' => 'Nemate pristup ovoj akciji!'
+                ], 403);
+            }
+        }
+
         return response()->json($activity);
     }
 
@@ -110,6 +175,19 @@ class ActivityController extends Controller
      */
     public function update(Request $request, Activity $activity)
     {
+        if ($request->user()->role_as !== UserRole::COACH) {
+            return response()->json([
+                'message' => 'Nemate pristup ovoj akciji!'
+            ], 403);
+        }
+
+        $coachGroupIds = Group::where('user_id', $request->user()->id)->pluck('id');
+        if (!$coachGroupIds->contains($activity->group_id)) {
+            return response()->json([
+                'message' => 'Nemate pristup ovoj akciji!'
+            ], 403);
+        }
+
         $fields = $request->validate([
             'date' => 'sometimes|date',
             'time' => 'sometimes|date_format:H:i:s',
@@ -152,8 +230,21 @@ class ActivityController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Activity $activity)
+    public function destroy(Activity $activity, Request $request)
     {
+        if ($request->user()->role_as !== UserRole::COACH) {
+            return response()->json([
+                'message' => 'Nemate pristup ovoj akciji!'
+            ], 403);
+        }
+
+        $coachGroupIds = Group::where('user_id', $request->user()->id)->pluck('id');
+        if (!$coachGroupIds->contains($activity->group_id)) {
+            return response()->json([
+                'message' => 'Nemate pristup ovoj akciji!'
+            ], 403);
+        }
+
         $activity->delete();
 
         return response()->json([

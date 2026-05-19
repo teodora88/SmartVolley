@@ -15,6 +15,13 @@ class UserController extends Controller
      */
     public function index(Request $request)
     {
+
+        if ($request->user()->role_as !== UserRole::ADMIN) {
+            return response()->json([
+                'message' => 'Nemate pristup ovoj akciji!'
+            ], 403);
+        }
+
         $users = User::when($request->role_as, function ($query, $role) {
             return $query->where('role_as', $role);
         })
@@ -32,6 +39,13 @@ class UserController extends Controller
      */
     public function store(Request $request)
     {
+
+        if ($request->user()->role_as !== UserRole::ADMIN) {
+            return response()->json([
+                'message' => 'Nemate pristup ovoj akciji!'
+            ], 403);
+        }
+
         $fields = $request->validate([
             'name' => 'required|string|max:255',
             'last_name' => 'required|string|max:255',
@@ -54,8 +68,15 @@ class UserController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(User $user)
+    public function show(User $user, Request $request)
     {
+
+        if ($request->user()->role_as !== UserRole::ADMIN && $request->user()->id !== $user->id) {
+            return response()->json([
+                'message' => 'Nemate pristup ovoj akciji!'
+            ], 403);
+        }
+
         return response()->json($user);
     }
 
@@ -64,6 +85,13 @@ class UserController extends Controller
      */
     public function update(Request $request, User $user)
     {
+
+        if ($request->user()->role_as !== UserRole::ADMIN && $request->user()->id !== $user->id) {
+            return response()->json([
+                'message' => 'Nemate pristup ovoj akciji!'
+            ], 403);
+        }
+
         $fields = $request->validate([
             'name' => 'sometimes|string|max:255',
             'last_name' => 'sometimes|string|max:255',
@@ -88,8 +116,15 @@ class UserController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(User $user)
+    public function destroy(User $user, Request $request)
     {
+
+        if ($request->user()->role_as !== UserRole::ADMIN) {
+            return response()->json([
+                'message' => 'Nemate pristup ovoj akciji!'
+            ], 403);
+        }
+
         try {
             $user->delete();
             return response()->json([
