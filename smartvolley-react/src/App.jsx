@@ -1,4 +1,4 @@
-import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import Login from "./pages/Login";
 import Layout from "./components/Layout";
 import Home from "./pages/Home";
@@ -10,9 +10,9 @@ export default function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={user ? <Home /> : <Login />} />
+        <Route path="/login" element={user ? <Navigate to="/" /> : <Login />} />
         <Route element={<Layout />}>
-        <Route path="/home" element={<Home />}></Route>
+        <Route path="/" element={user ? <Home /> : <Navigate to="login" />}></Route>
         </Route>
       </Routes>
     </BrowserRouter>

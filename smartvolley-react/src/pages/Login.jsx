@@ -34,7 +34,7 @@ export default function Login() {
       localStorage.setItem("userId", data.user.id);
       localStorage.setItem("token", data.token);
       setToken(data.token);
-      navigate("/home");
+      navigate("/");
     }
   }
 
