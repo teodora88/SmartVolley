@@ -43,6 +43,7 @@ export default function Layout() {
               {user?.role_as === "admin" && (
                 <>
                   <li><Link to="/users">Korisnici</Link></li>
+                  <li><Link to="/users/create">Kreiraj korisnika</Link></li>
                   <li><Link to="/profile">Moj profil</Link></li>
                 </>
               )}
