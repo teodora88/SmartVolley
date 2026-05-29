@@ -1,19 +1,27 @@
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import Login from "./pages/Login";
 import Layout from "./components/Layout";
-import Home from "./pages/Home";
+import Users from "./pages/Users";
 import { useContext } from "react";
 import { AppContext } from "./context/AppContext";
 
 export default function App() {
-  const {user} = useContext(AppContext);
+  const { user } = useContext(AppContext);
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/login" element={user ? <Navigate to="/" /> : <Login />} />
+        <Route
+          path="/login"
+          element={user ? <Navigate to="/users" /> : <Login />}
+        />
+
         <Route element={<Layout />}>
-        <Route path="/" element={user ? <Home /> : <Navigate to="login" />}></Route>
+          <Route
+            path="/users"
+            element={user ? <Users /> : <Navigate to="/login" />}
+          />
         </Route>
+        
       </Routes>
     </BrowserRouter>
   );

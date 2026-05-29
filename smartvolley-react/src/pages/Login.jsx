@@ -33,7 +33,14 @@ export default function Login() {
       localStorage.setItem("userId", data.user.id);
       localStorage.setItem("token", data.token);
       setToken(data.token);
-      navigate("/");
+      
+      if (data.user.role_as === "admin") {
+        navigate("/users");
+      } else if (data.user.role_as === "coach") {
+        navigate("/");
+      } else {
+        navigate("/");
+      }
     }
   }
 
