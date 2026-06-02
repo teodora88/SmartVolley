@@ -2,9 +2,11 @@ import { useEffect, useState } from "react";
 import { useContext } from "react";
 import { AppContext } from "../context/AppContext";
 import "../styles/Users.css";
+import { useNavigate } from "react-router-dom";
 
 export default function Users() {
   const { token } = useContext(AppContext);
+  const navigate = useNavigate();
   const [users, setUsers] = useState([]);
   const [search, setSearch] = useState("");
   const [roleFilter, setRoleFilter] = useState("");
@@ -71,7 +73,7 @@ export default function Users() {
               <td>{user.phone_number}</td>
               <td>{user.role_as}</td>
               <td>
-                <button className="btn-primary btn-sm">Izmeni</button>
+                <button className="btn-primary btn-sm" onClick={() => navigate(`/users/edit/${user.id}`)}>Izmeni</button>
                 <button className="btn-danger btn-sm">Obriši</button>
               </td>
             </tr>

@@ -102,12 +102,18 @@ class UserController extends Controller
         }
 
         $fields = $request->validate([
-            'name' => 'sometimes|string|max:255',
-            'last_name' => 'sometimes|string|max:255',
-            'username' => 'sometimes|string|unique:users,username,' . $user->id . '|max:255',
+            'name' => 'sometimes|filled|string|max:255',
+            'last_name' => 'sometimes|filled|string|max:255',
+            'username' => 'sometimes|filled|string|unique:users,username,' . $user->id . '|max:255',
             'password' => 'sometimes|string|min:6',
-            'phone_number' => 'sometimes|string',
-            'role_as' => ['sometimes', new Enum(UserRole::class)],
+            'phone_number' => 'sometimes|filled|string',
+            'role_as' => ['sometimes', 'filled', new Enum(UserRole::class)],
+        ], [
+            'name.filled' => 'Ime ne sme biti prazno.',
+            'last_name.filled' => 'Prezime ne sme biti prazno.',
+            'username.filled' => 'Korisničko ime ne sme biti prazno.',
+            'phone_number.filled' => 'Broj telefona ne sme biti prazan.',
+            'role_as.filled' => 'Uloga ne sme biti prazna.',
         ]);
 
         if (isset($fields['password'])) {
