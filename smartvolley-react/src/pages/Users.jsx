@@ -71,8 +71,8 @@ export default function Users() {
               <td>{user.phone_number}</td>
               <td>{user.role_as}</td>
               <td>
-                <button className="btn-edit">Izmeni</button>
-                <button className="btn-delete">Obriši</button>
+                <button className="btn-primary btn-sm">Izmeni</button>
+                <button className="btn-danger btn-sm">Obriši</button>
               </td>
             </tr>
           ))}

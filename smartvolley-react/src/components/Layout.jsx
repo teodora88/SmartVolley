@@ -49,7 +49,7 @@ export default function Layout() {
               )}
             </ul>
           </div>
-          <button className="logout-button" onClick={handleLogout}>Odjavi se</button>
+          <button className="btn-primary" onClick={handleLogout}>Odjavi se</button>
         </aside>
         <main>
           <Outlet />

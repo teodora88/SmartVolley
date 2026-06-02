@@ -1,7 +1,6 @@
 import { useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { AppContext } from "../context/AppContext";
-import "../styles/CreateUser.css";
 import Modal from "../components/Modal";
 
 export default function CreateUser() {
@@ -50,7 +49,7 @@ export default function CreateUser() {
         />
       )}
       <h1 className="page-title">Kreiraj korisnika</h1>
-      <form onSubmit={handleCreate} className="user-form">
+      <form onSubmit={handleCreate} className="form-body">
         <div>
           <input
             className="form-input"
@@ -126,7 +125,7 @@ export default function CreateUser() {
           </select>
           {errors.role_as && <p className="error">{errors.role_as[0]}</p>}
         </div>
-        <button className="btn-submit" type="submit">
+        <button className="btn-primary  " type="submit">
           Kreiraj korisnika
         </button>
       </form>

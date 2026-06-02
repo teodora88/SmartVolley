@@ -47,11 +47,11 @@ export default function Login() {
   return (
     <div className="login-page">
       <div className="login-card">
-        <h1 className="title">Prijavite se na svoj nalog</h1>
+        <h1 className="page-title">Prijavite se na svoj nalog</h1>
         <form onSubmit={handleLogin} className="login-form">
           <div>
             <input
-              className="login-input"
+              className="form-input"
               type="text"
               placeholder="Korisničko ime"
               value={formData.username}
@@ -63,7 +63,7 @@ export default function Login() {
           </div>
           <div>
             <input
-              className="login-input"
+              className="form-input"
               type="password"
               placeholder="Lozinka"
               value={formData.password}
@@ -75,7 +75,7 @@ export default function Login() {
           </div>
           <div>
             {errors.general && <p className="error">{errors.general}</p>}
-            <button className="login-button">Prijavi se</button>
+            <button className="btn-primary btn-full">Prijavi se</button>
           </div>
         </form>
       </div>

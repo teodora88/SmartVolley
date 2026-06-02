@@ -77,21 +77,6 @@ nav {
   color: #0077B6;
 }
 
-.logout-button {
-  width: 100%;
-  padding: 10px 12px;
-  background-color: #0077B6;
-  color: white;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-  font-size: 15px;
-}
-
-.logout-button:hover {
-  background-color: #00B4D8;
-}
-
 main {
   flex: 1;
   padding: 24px;

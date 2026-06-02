@@ -53,6 +53,15 @@ class UserController extends Controller
             'password' => 'required|string|min:6',
             'phone_number' => 'required|string',
             'role_as' => ['required', new Enum(UserRole::class)],
+        ], [
+            'name.required' => 'Ime je obavezno.',
+            'last_name.required' => 'Prezime je obavezno.',
+            'username.required' => 'Korisničko ime je obavezno.',
+            'username.unique' => 'Korisničko ime je već zauzeto.',
+            'password.required' => 'Lozinka je obavezna.',
+            'password.min' => 'Lozinka mora imati najmanje 6 karaktera.',
+            'phone_number.required' => 'Broj telefona je obavezan.',
+            'role_as.required' => 'Uloga je obavezna.',
         ]);
 
         $fields['password'] = Hash::make($fields['password']);

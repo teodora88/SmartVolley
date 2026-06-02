@@ -5,7 +5,7 @@ export default function Modal({ message, onClose }) {
     <div className="modal-overlay">
       <div className="modal">
         <p className="modal-message">{message}</p>
-        <button className="modal-button" onClick={onClose}>
+        <button className="btn-primary" onClick={onClose}>
           Okej
         </button>
       </div>
