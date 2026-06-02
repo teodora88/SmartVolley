@@ -3,6 +3,7 @@ import { useContext } from "react";
 import { AppContext } from "../context/AppContext";
 import "../styles/Users.css";
 import { useNavigate } from "react-router-dom";
+import Modal from "../components/Modal";
 
 export default function Users() {
   const { token } = useContext(AppContext);
@@ -10,6 +11,8 @@ export default function Users() {
   const [users, setUsers] = useState([]);
   const [search, setSearch] = useState("");
   const [roleFilter, setRoleFilter] = useState("");
+  const [deleteId, setDeleteId] = useState(null);
+  const [errorMessage, setErrorMessage] = useState(null);
 
   useEffect(() => {
     async function getUsers() {
@@ -29,8 +32,36 @@ export default function Users() {
     getUsers();
   }, [search, roleFilter]);
 
+  async function handleDelete() {
+    const res = await fetch(`/api/users/${deleteId}`, {
+      method: "DELETE",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    if (res.ok) {
+      setUsers(users.filter((user) => user.id !== deleteId));
+      setDeleteId(null);
+    } else if (res.status === 409) {
+      const data = await res.json();
+      setDeleteId(null);
+      setErrorMessage(data.message);
+    }
+  }
+
   return (
     <div className="users-container">
+      {deleteId && (
+        <Modal
+          message="Da li ste sigurni da želite da obrišete ovog korisnika?"
+          onClose={() => setDeleteId(null)}
+          onConfirm={handleDelete}
+        />
+      )}
+      {errorMessage && (
+        <Modal message={errorMessage} onClose={() => setErrorMessage(null)} />
+      )}
       <h1 className="page-title">Korisnici</h1>
       <div className="users-filters">
         <input
@@ -73,8 +104,18 @@ export default function Users() {
               <td>{user.phone_number}</td>
               <td>{user.role_as}</td>
               <td>
-                <button className="btn-primary btn-sm" onClick={() => navigate(`/users/edit/${user.id}`)}>Izmeni</button>
-                <button className="btn-danger btn-sm">Obriši</button>
+                <button
+                  className="btn-primary btn-sm"
+                  onClick={() => navigate(`/users/edit/${user.id}`)}
+                >
+                  Izmeni
+                </button>
+                <button
+                  className="btn-danger btn-sm"
+                  onClick={() => setDeleteId(user.id)}
+                >
+                  Obriši
+                </button>
               </td>
             </tr>
           ))}

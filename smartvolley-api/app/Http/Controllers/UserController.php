@@ -143,11 +143,11 @@ class UserController extends Controller
         try {
             $user->delete();
             return response()->json([
-                'message' => 'Korisnik je uspesno obrisan!'
+                'message' => 'Korisnik je uspešno obrisan!'
             ], 200);
         } catch (\Illuminate\Database\QueryException $e) {
             return response()->json([
-                'message' => 'Korisnik ne moze biti obrisan jer ima povezane clanove!'
+                'message' => 'Korisnik ne može biti obrisan jer ima povezane članove!'
             ], 409);
         }
     }

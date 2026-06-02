@@ -26,3 +26,9 @@
   margin-bottom: 24px;
   font-weight: 500;
 }
+
+.modal-buttons {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+}
