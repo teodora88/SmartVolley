@@ -22,13 +22,17 @@ class MemberController extends Controller
         }
 
         if ($request->user()->role_as === UserRole::PARENT) {
-            $members = Member::where('user_id', $request->user()->id)->get();
+            $members = Member::with('group')->where('user_id', $request->user()->id)->get();
             return response()->json($members);
         }
 
-        $members = Member::when($request->group_id, function ($query, $groupId) {
-            return $query->where('group_id', $groupId);
-        })
+        $coachGroupIds = Group::where('user_id', $request->user()->id)->pluck('id');
+
+        $members = Member::with('group')
+            ->whereIn('group_id', $coachGroupIds)
+            ->when($request->group_id, function ($query, $groupId) {
+                return $query->where('group_id', $groupId);
+            })
             ->when($request->search, function ($query, $search) {
                 return $query->where('name', 'like', "%{$search}%")
                     ->orWhere('last_name', 'like', "%{$search}%");
@@ -56,13 +60,25 @@ class MemberController extends Controller
             'height' => 'nullable|numeric|min:50|max:250',
             'weight' => 'nullable|numeric|min:10|max:200',
             'user_id' => 'nullable|exists:users,id',
-            'group_id' => 'nullable|exists:groups,id',
+            'group_id' => 'required|exists:groups,id',
+        ], [
+            'name.required' => 'Ime je obavezno.',
+            'last_name.required' => 'Prezime je obavezno.',
+            'group_id.required' => 'Grupa je obavezna.',
+            'group_id.exists' => 'Izabrana grupa ne postoji.',
         ]);
+
+        $coachGroupIds = Group::where('user_id', $request->user()->id)->pluck('id');
+        if (!$coachGroupIds->contains($fields['group_id'])) {
+            return response()->json([
+                'message' => 'Nemate pristup ovoj akciji.'
+            ], 403);
+        }
 
         $member = Member::create($fields);
 
         return response()->json([
-            'message' => 'Clan je uspesno kreiran!',
+            'message' => 'Član je uspešno kreiran.',
             'member' => $member,
         ], 201);
     }
@@ -84,7 +100,16 @@ class MemberController extends Controller
             ], 403);
         }
 
-        return response()->json($member);
+        if ($request->user()->role_as === UserRole::COACH) {
+            $coachGroupIds = Group::where('user_id', $request->user()->id)->pluck('id');
+            if (!$coachGroupIds->contains($member->group_id)) {
+                return response()->json([
+                    'message' => 'Nemate pristup ovoj akciji!'
+                ], 403);
+            }
+        }
+
+        return response()->json($member->load('group'));
     }
 
     /**
