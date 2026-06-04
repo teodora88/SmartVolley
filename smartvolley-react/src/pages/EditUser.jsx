@@ -5,7 +5,7 @@ import Modal from "../components/Modal";
 import UserForm from "../components/UserForm";
 
 export default function EditUser() {
-  const { token } = useContext(AppContext);
+  const { token, user, setUser } = useContext(AppContext);
   const navigate = useNavigate();
   const { id } = useParams();
 
@@ -62,6 +62,9 @@ export default function EditUser() {
     if (res.status === 422) {
       setErrors(data.errors);
     } else if (res.ok) {
+      if (user.id === parseInt(id)) {
+        setUser(data.user);
+      }
       setShowModal(true);
     }
   }
@@ -71,7 +74,7 @@ export default function EditUser() {
       {showModal && (
         <Modal
           message="Podaci su uspešno izmenjeni!"
-          onClose={() => navigate("/users")}
+          onClose={() => user.id === parseInt(id) ? navigate("/profile") : navigate("/users")}
         />
       )}
       <h1 className="page-title">Izmeni korisnika</h1>

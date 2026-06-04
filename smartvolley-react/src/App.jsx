@@ -6,6 +6,7 @@ import Login from "./pages/Login";
 import { useContext } from "react";
 import { AppContext } from "./context/AppContext";
 import EditUser from "./pages/EditUser";
+import Profile from "./pages/Profile";
 
 export default function App() {
   const { user } = useContext(AppContext);
@@ -30,6 +31,10 @@ export default function App() {
           <Route
             path="/users/edit/:id"
             element={user ? <EditUser /> : <Navigate to="/login" />}
+          />
+          <Route
+            path="/profile"
+            element={user ? <Profile /> : <Navigate to="/login" />}
           />
         </Route>
       </Routes>
