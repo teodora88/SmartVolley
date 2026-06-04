@@ -124,23 +124,27 @@ class GroupController extends Controller
      */
     public function destroy(Group $group, Request $request)
     {
-
         if ($request->user()->role_as !== UserRole::COACH) {
             return response()->json([
-                'message' => 'Nemate pristup ovoj akciji!'
+                'message' => 'Nemate pristup ovoj akciji.'
             ], 403);
         }
 
         if ($group->user_id !== $request->user()->id) {
             return response()->json([
-                'message' => 'Nemate pristup ovoj akciji!'
+                'message' => 'Nemate pristup ovoj akciji.'
             ], 403);
         }
 
-        $group->delete();
-
-        return response()->json([
-            'message' => 'Grupa je uspesno obrisana!'
-        ], 200);
+        try {
+            $group->delete();
+            return response()->json([
+                'message' => 'Grupa je uspešno obrisana.'
+            ], 200);
+        } catch (\Illuminate\Database\QueryException $e) {
+            return response()->json([
+                'message' => 'Grupa ne može biti obrisana jer ima povezane članove.'
+            ], 409);
+        }
     }
 }

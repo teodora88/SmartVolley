@@ -20,7 +20,7 @@ return new class extends Migration
             $table->decimal('weight', 5, 2)->nullable();
 
             $table->foreignId('user_id')->nullable()->constrained()->restrictOnDelete();
-            $table->foreignId('group_id')->nullable()->constrained()->nullOnDelete();
+            $table->foreignId('group_id')->constrained()->restrictOnDelete();
 
             $table->timestamps();
         });
