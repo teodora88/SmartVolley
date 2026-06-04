@@ -14,6 +14,11 @@ export default function Users() {
   const [deleteId, setDeleteId] = useState(null);
   const [errorMessage, setErrorMessage] = useState(null);
   const [showDeleteSuccess, setShowDeleteSuccess] = useState(false);
+  const roleLabels = {
+    admin: "Admin",
+    coach: "Trener",
+    parent: "Roditelj",
+  };
 
   useEffect(() => {
     async function getUsers() {
@@ -110,7 +115,7 @@ export default function Users() {
               <td>{user.last_name}</td>
               <td>{user.username}</td>
               <td>{user.phone_number}</td>
-              <td>{user.role_as}</td>
+              <td>{roleLabels[user.role_as]}</td>
               <td>
                 <button
                   className="btn-primary btn-sm"

@@ -5,6 +5,11 @@ import { AppContext } from "../context/AppContext";
 export default function Profile() {
   const { user } = useContext(AppContext);
   const navigate = useNavigate();
+  const roleLabels = {
+    admin: "Admin",
+    coach: "Trener",
+    parent: "Roditelj",
+  };
 
   if (!user) return null;
 
@@ -30,7 +35,7 @@ export default function Profile() {
         </div>
         <div className="profile-row">
           <span className="profile-label">Uloga:</span>
-          <span className="profile-value">{user.role_as}</span>
+          <span className="profile-value">{roleLabels[user.role_as]}</span>
         </div>
         <button
           className="btn-primary btn-full"
