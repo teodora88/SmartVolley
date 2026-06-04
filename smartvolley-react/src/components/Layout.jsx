@@ -31,25 +31,62 @@ export default function Layout() {
         <nav>
           <p className="nav-logo">SmartVolley</p>
           <div className="nav-right">
-            {user && <p>{user.name} {user.last_name}</p>}
+            {user && (
+              <p>
+                {user.name} {user.last_name}
+              </p>
+            )}
           </div>
         </nav>
       </header>
       <div className="content-wrapper">
         <aside className="sidebar">
           <div className="sidebar-menu">
-            <p className="sidebar-role">{user?.role_as === "admin" ? "Admin" : user?.role_as === "coach" ? "Trener" : "Roditelj"}</p>
+            <p className="sidebar-role">
+              {user?.role_as === "admin"
+                ? "Admin"
+                : user?.role_as === "coach"
+                  ? "Trener"
+                  : "Roditelj"}
+            </p>
             <ul>
               {user?.role_as === "admin" && (
                 <>
-                  <li><Link to="/users">Korisnici</Link></li>
-                  <li><Link to="/users/create">Kreiraj korisnika</Link></li>
-                  <li><Link to="/profile">Moj profil</Link></li>
+                  <li>
+                    <Link to="/users">Korisnici</Link>
+                  </li>
+                  <li>
+                    <Link to="/users/create">Kreiraj korisnika</Link>
+                  </li>
+                  <li>
+                    <Link to="/profile">Moj profil</Link>
+                  </li>
+                </>
+              )}
+              {user?.role_as === "coach" && (
+                <>
+                  <li>
+                    <Link to="/activities">Aktivnosti</Link>
+                  </li>
+                  <li>
+                    <Link to="/groups">Grupe</Link>
+                  </li>
+                  <li>
+                    <Link to="/members">Članovi</Link>
+                  </li>
+                  <li>
+                    <Link to="/locations">Lokacije</Link>
+                  </li>
+                  <li>
+                    <Link to="/profile">Moj profil</Link>
+                  </li>
                 </>
               )}
             </ul>
           </div>
-          <button className="btn-primary" onClick={handleLogout}>Odjavi se</button>
+          <button className="btn-primary" onClick={handleLogout}>
+            Odjavi se
+          </button>
         </aside>
         <main>
           <Outlet />
