@@ -24,11 +24,11 @@ class GroupController extends Controller
 
         if ($request->user()->role_as === UserRole::PARENT) {
             $groupIds = Member::where('user_id', $request->user()->id)->pluck('group_id');
-            $groups = Group::whereIn('id', $groupIds)->get();
+            $groups = Group::with('location')->whereIn('id', $groupIds)->get();
             return response()->json($groups);
         }
 
-        $groups = Group::where('user_id', $request->user()->id)->get();
+        $groups = Group::with('location')->where('user_id', $request->user()->id)->get();
         return response()->json($groups);
     }
 

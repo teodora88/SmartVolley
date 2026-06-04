@@ -10,6 +10,8 @@ import Profile from "./pages/Profile";
 import Locations from "./pages/Locations";
 import Activities from "./pages/Activities";
 import Groups from "./pages/Groups";
+import CreateGroup from "./pages/CreateGroup";
+import EditGroup from "./pages/EditGroup";
 import Members from "./pages/Members";
 import CreateLocation from "./pages/CreateLocation";
 import EditLocation from "./pages/EditLocation";
@@ -68,6 +70,14 @@ export default function App() {
           <Route
             path="/groups"
             element={isCoach ? <Groups /> : <Navigate to="/login" />}
+          />
+          <Route
+            path="/groups/create"
+            element={isCoach ? <CreateGroup /> : <Navigate to="/login" />}
+          />
+          <Route
+            path="/groups/edit/:id"
+            element={isCoach ? <EditGroup /> : <Navigate to="/login" />}
           />
           <Route
             path="/members"
