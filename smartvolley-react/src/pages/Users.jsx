@@ -13,6 +13,7 @@ export default function Users() {
   const [roleFilter, setRoleFilter] = useState("");
   const [deleteId, setDeleteId] = useState(null);
   const [errorMessage, setErrorMessage] = useState(null);
+  const [showDeleteSuccess, setShowDeleteSuccess] = useState(false);
 
   useEffect(() => {
     async function getUsers() {
@@ -43,6 +44,7 @@ export default function Users() {
     if (res.ok) {
       setUsers(users.filter((user) => user.id !== deleteId));
       setDeleteId(null);
+      setShowDeleteSuccess(true);
     } else if (res.status === 409) {
       const data = await res.json();
       setDeleteId(null);
@@ -61,6 +63,12 @@ export default function Users() {
       )}
       {errorMessage && (
         <Modal message={errorMessage} onClose={() => setErrorMessage(null)} />
+      )}
+      {showDeleteSuccess && (
+        <Modal
+          message="Korisnik je uspešno obrisan."
+          onClose={() => setShowDeleteSuccess(false)}
+        />
       )}
       <h1 className="page-title">Korisnici</h1>
       <div className="users-filters">

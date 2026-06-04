@@ -11,6 +11,8 @@ import Locations from "./pages/Locations";
 import Activities from "./pages/Activities";
 import Groups from "./pages/Groups";
 import Members from "./pages/Members";
+import CreateLocation from "./pages/CreateLocation";
+import EditLocation from "./pages/EditLocation";
 
 export default function App() {
   const { user } = useContext(AppContext);
@@ -74,6 +76,14 @@ export default function App() {
           <Route
             path="/locations"
             element={isCoach ? <Locations /> : <Navigate to="/login" />}
+          />
+          <Route
+            path="/locations/create"
+            element={isCoach ? <CreateLocation /> : <Navigate to="/login" />}
+          />
+          <Route
+            path="/locations/edit/:id"
+            element={isCoach ? <EditLocation /> : <Navigate to="/login" />}
           />
         </Route>
       </Routes>

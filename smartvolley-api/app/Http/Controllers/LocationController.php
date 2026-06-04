@@ -15,7 +15,7 @@ class LocationController extends Controller
     {
         if ($request->user()->role_as === UserRole::ADMIN) {
             return response()->json([
-                'message' => 'Nemate pristup ovoj akciji!'
+                'message' => 'Nemate pristup ovoj akciji.'
             ], 403);
         }
 
@@ -31,7 +31,7 @@ class LocationController extends Controller
 
         if ($request->user()->role_as !== UserRole::COACH) {
             return response()->json([
-                'message' => 'Nemate pristup ovoj akciji!'
+                'message' => 'Nemate pristup ovoj akciji.'
             ], 403);
         }
 
@@ -43,7 +43,7 @@ class LocationController extends Controller
         $location = Location::create($fields);
 
         return response()->json([
-            'message' => 'Lokacija je uspesno kreirana!',
+            'message' => 'Lokacija je uspešno kreirana.',
             'location' => $location,
         ], 201);
     }
@@ -55,7 +55,7 @@ class LocationController extends Controller
     {
         if ($request->user()->role_as === UserRole::ADMIN) {
             return response()->json([
-                'message' => 'Nemate pristup ovoj akciji!'
+                'message' => 'Nemate pristup ovoj akciji.'
             ], 403);
         }
 
@@ -69,7 +69,7 @@ class LocationController extends Controller
     {
         if ($request->user()->role_as !== UserRole::COACH) {
             return response()->json([
-                'message' => 'Nemate pristup ovoj akciji!'
+                'message' => 'Nemate pristup ovoj akciji.'
             ], 403);
         }
 
@@ -81,7 +81,7 @@ class LocationController extends Controller
         $location->update($fields);
 
         return response()->json([
-            'message' => 'Podaci uspesno promenjeni!',
+            'message' => 'Podaci uspešno promenjeni.',
             'location' => $location,
         ]);
     }
@@ -93,18 +93,18 @@ class LocationController extends Controller
     {
         if ($request->user()->role_as !== UserRole::COACH) {
             return response()->json([
-                'message' => 'Nemate pristup ovoj akciji!'
+                'message' => 'Nemate pristup ovoj akciji.'
             ], 403);
         }
 
         try {
             $location->delete();
             return response()->json([
-                'message' => 'Lokacija je uspesno obrisana!'
+                'message' => 'Lokacija je uspešno obrisana.'
             ], 200);
         } catch (\Illuminate\Database\QueryException $e) {
             return response()->json([
-                'message' => 'Lokacija ne moze biti obrisana jer ima povezane aktivnosti!'
+                'message' => 'Lokacija ne može biti obrisana jer ima povezane aktivnosti.'
             ], 409);
         }
     }

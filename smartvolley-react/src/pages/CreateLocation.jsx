@@ -2,19 +2,15 @@ import { useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { AppContext } from "../context/AppContext";
 import Modal from "../components/Modal";
-import UserForm from "../components/UserForm";
+import LocationForm from "../components/LocationForm";
 
-export default function CreateUser() {
+export default function CreateLocation() {
   const { token } = useContext(AppContext);
   const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
     name: "",
-    last_name: "",
-    username: "",
-    password: "",
-    phone_number: "",
-    role_as: "",
+    address: "",
   });
 
   const [errors, setErrors] = useState({});
@@ -24,7 +20,7 @@ export default function CreateUser() {
     e.preventDefault();
     setErrors({});
 
-    const res = await fetch("/api/users", {
+    const res = await fetch("/api/locations", {
       method: "POST",
       headers: {
         Authorization: `Bearer ${token}`,
@@ -45,17 +41,17 @@ export default function CreateUser() {
     <div className="form-container">
       {showModal && (
         <Modal
-          message="Korisnik je uspešno kreiran."
-          onClose={() => navigate("/users")}
+          message="Lokacija je uspešno kreirana."
+          onClose={() => navigate("/locations")}
         />
       )}
-      <h1 className="page-title">Kreiraj korisnika</h1>
-      <UserForm
+      <h1 className="page-title">Kreiraj lokaciju</h1>
+      <LocationForm
         formData={formData}
         setFormData={setFormData}
         errors={errors}
         onSubmit={handleCreate}
-        submitLabel="Kreiraj korisnika"
+        submitLabel="Kreiraj lokaciju"
       />
     </div>
   );

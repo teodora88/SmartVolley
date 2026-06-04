@@ -28,6 +28,13 @@ body {
   margin-bottom: 24px;
 }
 
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
 /* Dugmad — sva plave dugmadi su ista */
 .btn-primary {
   padding: 10px 12px;
@@ -64,14 +71,14 @@ body {
 }
 
 .btn-full {
-    width: 100%;
-    margin-top: 8px;
+  width: 100%;
+  margin-top: 8px;
 }
 
 .btn-sm {
-    padding: 6px 12px;
-    font-size: 13px;
-    margin-right: 6px;
+  padding: 6px 12px;
+  font-size: 13px;
+  margin-right: 6px;
 }
 
 /* Inputi */
@@ -128,10 +135,10 @@ body {
 
 .profile-label {
   font-weight: 600;
-  color: #03045E;
+  color: #03045e;
   min-width: 150px;
 }
 
 .profile-value {
-  color: #03045E;
+  color: #03045e;
 }

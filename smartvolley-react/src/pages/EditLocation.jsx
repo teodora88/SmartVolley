@@ -2,28 +2,24 @@ import { useState, useEffect, useContext } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { AppContext } from "../context/AppContext";
 import Modal from "../components/Modal";
-import UserForm from "../components/UserForm";
+import LocationForm from "../components/LocationForm";
 
-export default function EditUser() {
-  const { token, user, setUser } = useContext(AppContext);
+export default function EditLocation() {
+  const { token } = useContext(AppContext);
   const navigate = useNavigate();
   const { id } = useParams();
 
   const [formData, setFormData] = useState({
     name: "",
-    last_name: "",
-    username: "",
-    password: "",
-    phone_number: "",
-    role_as: "",
+    address: "",
   });
 
   const [errors, setErrors] = useState({});
   const [showModal, setShowModal] = useState(false);
 
   useEffect(() => {
-    async function getUser() {
-      const res = await fetch(`/api/users/${id}`, {
+    async function getLocation() {
+      const res = await fetch(`/api/locations/${id}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -31,30 +27,23 @@ export default function EditUser() {
       const data = await res.json();
       setFormData({
         name: data.name,
-        last_name: data.last_name,
-        username: data.username,
-        password: "",
-        phone_number: data.phone_number,
-        role_as: data.role_as,
+        address: data.address,
       });
     }
 
-    getUser();
+    getLocation();
   }, [id]);
 
   async function handleEdit(e) {
     e.preventDefault();
     setErrors({});
 
-    const dataToSend = { ...formData };
-    if (!dataToSend.password) delete dataToSend.password;
-
-    const res = await fetch(`/api/users/${id}`, {
+    const res = await fetch(`/api/locations/${id}`, {
       method: "PATCH",
       headers: {
         Authorization: `Bearer ${token}`,
       },
-      body: JSON.stringify(dataToSend),
+      body: JSON.stringify(formData),
     });
 
     const data = await res.json();
@@ -62,9 +51,6 @@ export default function EditUser() {
     if (res.status === 422) {
       setErrors(data.errors);
     } else if (res.ok) {
-      if (user.id === parseInt(id)) {
-        setUser(data.user);
-      }
       setShowModal(true);
     }
   }
@@ -73,12 +59,12 @@ export default function EditUser() {
     <div className="form-container">
       {showModal && (
         <Modal
-          message="Podaci su uspešno izmenjeni."
-          onClose={() => user.id === parseInt(id) ? navigate("/profile") : navigate("/users")}
+          message="Lokacija je uspešno izmenjena."
+          onClose={() => navigate("/locations")}
         />
       )}
-      <h1 className="page-title">Izmeni korisnika</h1>
-      <UserForm
+      <h1 className="page-title">Izmeni lokaciju</h1>
+      <LocationForm
         formData={formData}
         setFormData={setFormData}
         errors={errors}
