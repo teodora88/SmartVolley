@@ -37,6 +37,9 @@ class ActivityController extends Controller
                 ->when($request->status, function ($query, $status) {
                     return $query->where('status', $status);
                 })
+                ->when($request->month, function ($query, $month) {
+                    return $query->whereMonth('date', $month);
+                })
                 ->get();
 
             return response()->json($activities);
@@ -54,6 +57,9 @@ class ActivityController extends Controller
             })
             ->when($request->status, function ($query, $status) {
                 return $query->where('status', $status);
+            })
+            ->when($request->month, function ($query, $month) {
+                return $query->whereMonth('date', $month);
             })
             ->get();
 

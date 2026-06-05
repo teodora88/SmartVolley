@@ -32,12 +32,18 @@ class AttendanceController extends Controller
                 ], 403);
             }
 
-            $attendances = Attendance::whereIn('member_id', $memberIds)
+            $attendances = Attendance::with('member.group', 'activity')
+                ->whereIn('member_id', $memberIds)
                 ->when($request->member_id, function ($query, $memberId) {
                     return $query->where('member_id', $memberId);
                 })
                 ->when($request->activity_id, function ($query, $activityId) {
                     return $query->where('activity_id', $activityId);
+                })
+                ->when($request->month, function ($query, $month) {
+                    return $query->whereHas('activity', function ($q) use ($month) {
+                        $q->whereMonth('date', $month);
+                    });
                 })
                 ->get();
 
@@ -49,12 +55,18 @@ class AttendanceController extends Controller
             ->where('type', ActivityType::PRACTICE)
             ->pluck('id');
 
-        $attendances = Attendance::whereIn('activity_id', $activityIds)
+        $attendances = Attendance::with('member.group', 'activity')
+            ->whereIn('activity_id', $activityIds)
             ->when($request->activity_id, function ($query, $activityId) {
                 return $query->where('activity_id', $activityId);
             })
             ->when($request->member_id, function ($query, $memberId) {
                 return $query->where('member_id', $memberId);
+            })
+            ->when($request->month, function ($query, $month) {
+                return $query->whereHas('activity', function ($q) use ($month) {
+                    $q->whereMonth('date', $month);
+                });
             })
             ->get();
 

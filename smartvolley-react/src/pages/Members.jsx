@@ -98,7 +98,7 @@ export default function Members() {
           ))}
         </select>
       </div>
-      <table className="users-table">
+      <table className="data-table">
         <thead>
           <tr>
             <th>#</th>

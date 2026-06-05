@@ -4,6 +4,7 @@ import { AppContext } from "../context/AppContext";
 import { useNavigate } from "react-router-dom";
 import Modal from "../components/Modal";
 import "../styles/Activities.css";
+import { formatDate } from "../utils/formatDate";
 
 export default function Activities() {
   const { token } = useContext(AppContext);
@@ -13,6 +14,7 @@ export default function Activities() {
   const [groupFilter, setGroupFilter] = useState("");
   const [typeFilter, setTypeFilter] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
+  const [monthFilter, setMonthFilter] = useState("");
   const [deleteId, setDeleteId] = useState(null);
   const [showDeleteSuccess, setShowDeleteSuccess] = useState(false);
 
@@ -46,6 +48,7 @@ export default function Activities() {
       if (groupFilter) params.append("group_id", groupFilter);
       if (typeFilter) params.append("type", typeFilter);
       if (statusFilter) params.append("status", statusFilter);
+      if (monthFilter) params.append("month", monthFilter);
 
       const res = await fetch(`/api/activities?${params}`, {
         headers: { Authorization: `Bearer ${token}` },
@@ -54,7 +57,7 @@ export default function Activities() {
       setActivities(data.sort((a, b) => new Date(b.date) - new Date(a.date)));
     }
     getActivities();
-  }, [groupFilter, typeFilter, statusFilter]);
+  }, [groupFilter, typeFilter, statusFilter, monthFilter]);
 
   async function handleDelete() {
     const res = await fetch(`/api/activities/${deleteId}`, {
@@ -127,16 +130,36 @@ export default function Activities() {
           <option value="postponed">Odložen/a</option>
           <option value="completed">Završen/a</option>
         </select>
+        <select
+          className="filter-select"
+          value={monthFilter}
+          onChange={(e) => setMonthFilter(e.target.value)}
+        >
+          <option value="">Svi meseci</option>
+          <option value="1">Januar</option>
+          <option value="2">Februar</option>
+          <option value="3">Mart</option>
+          <option value="4">April</option>
+          <option value="5">Maj</option>
+          <option value="6">Jun</option>
+          <option value="7">Jul</option>
+          <option value="8">Avgust</option>
+          <option value="9">Septembar</option>
+          <option value="10">Oktobar</option>
+          <option value="11">Novembar</option>
+          <option value="12">Decembar</option>
+        </select>
       </div>
-      <table className="users-table">
+      <table className="data-table">
         <thead>
           <tr>
             <th>#</th>
+            <th>Tip</th>
             <th>Datum</th>
             <th>Vreme</th>
-            <th>Tip</th>
-            <th>Status</th>
             <th>Grupa</th>
+            <th>Status</th>
+            <th>Dodatne akcije</th>
             <th>Akcije</th>
           </tr>
         </thead>
@@ -144,15 +167,37 @@ export default function Activities() {
           {activities.map((activity, index) => (
             <tr key={activity.id}>
               <td>{index + 1}</td>
-              <td>{activity.date}</td>
-              <td>{activity.time ? activity.time.substring(0, 5) : "-"}</td>
               <td>{typeLabels[activity.type]}</td>
+              <td>{formatDate(activity.date)}</td>
+              <td>{activity.time ? activity.time.substring(0, 5) : "-"}</td>
+              <td>{activity.group ? activity.group.name : "-"}</td>
               <td>
                 <span className={`status-badge status-${activity.status}`}>
                   {statusLabels[activity.status]}
                 </span>
               </td>
-              <td>{activity.group ? activity.group.name : "-"}</td>
+              <td>
+                {activity.type === "practice" && (
+                  <button
+                    className="btn-primary btn-sm"
+                    onClick={() =>
+                      navigate(`/activities/${activity.id}/attendance`)
+                    }
+                  >
+                    Evidentiraj prisutnost
+                  </button>
+                )}
+                {activity.type === "tournament" && (
+                  <button
+                    className="btn-primary btn-sm"
+                    onClick={() =>
+                      navigate(`/activities/${activity.id}/registrations`)
+                    }
+                  >
+                    Pregledaj prijave
+                  </button>
+                )}
+              </td>
               <td>
                 <button
                   className="btn-primary btn-sm"

@@ -11,6 +11,8 @@ import Locations from "./pages/Locations";
 import Activities from "./pages/Activities";
 import CreateActivity from "./pages/CreateActivity";
 import EditActivity from "./pages/EditActivity";
+import ActivityAttendance from "./pages/ActivityAttendance";
+import Attendances from "./pages/Attendances";
 import Groups from "./pages/Groups";
 import CreateGroup from "./pages/CreateGroup";
 import EditGroup from "./pages/EditGroup";
@@ -79,6 +81,17 @@ export default function App() {
             path="/activities/edit/:id"
             element={isCoach ? <EditActivity /> : <Navigate to="/login" />}
           />
+          <Route
+            path="/activities/:id/attendance"
+            element={
+              isCoach ? <ActivityAttendance /> : <Navigate to="/login" />
+            }
+          />
+          <Route
+            path="/attendances"
+            element={isCoach ? <Attendances /> : <Navigate to="/login" />}
+          />
+
           <Route
             path="/groups"
             element={isCoach ? <Groups /> : <Navigate to="/login" />}

@@ -95,7 +95,7 @@ export default function Users() {
           <option value="parent">Roditelj</option>
         </select>
       </div>
-      <table className="users-table">
+      <table className="data-table">
         <thead>
           <tr>
             <th>#</th>

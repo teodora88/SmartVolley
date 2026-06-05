@@ -72,7 +72,7 @@ export default function Locations() {
           Kreiraj lokaciju
         </button>
       </div>
-      <table className="users-table">
+      <table className="data-table">
         <thead>
           <tr>
             <th>#</th>
