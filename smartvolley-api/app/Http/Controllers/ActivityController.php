@@ -29,7 +29,8 @@ class ActivityController extends Controller
         if ($request->user()->role_as === UserRole::PARENT) {
             $groupIds = Member::where('user_id', $request->user()->id)->pluck('group_id');
 
-            $activities = Activity::whereIn('group_id', $groupIds)
+            $activities = Activity::with('group', 'location')
+                ->whereIn('group_id', $groupIds)
                 ->when($request->type, function ($query, $type) {
                     return $query->where('type', $type);
                 })
@@ -43,7 +44,8 @@ class ActivityController extends Controller
 
         $coachGroupIds = Group::where('user_id', $request->user()->id)->pluck('id');
 
-        $activities = Activity::whereIn('group_id', $coachGroupIds)
+        $activities = Activity::with('group', 'location')
+            ->whereIn('group_id', $coachGroupIds)
             ->when($request->group_id, function ($query, $groupId) {
                 return $query->where('group_id', $groupId);
             })
