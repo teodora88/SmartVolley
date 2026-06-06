@@ -13,6 +13,10 @@ export default function Members() {
   const [groupFilter, setGroupFilter] = useState("");
   const [deleteId, setDeleteId] = useState(null);
   const [showDeleteSuccess, setShowDeleteSuccess] = useState(false);
+  const [transferMember, setTransferMember] = useState(null);
+  const [otherGroups, setOtherGroups] = useState([]);
+  const [selectedGroup, setSelectedGroup] = useState("");
+  const [showTransferSuccess, setShowTransferSuccess] = useState(false);
 
   useEffect(() => {
     async function getGroups() {
@@ -53,6 +57,31 @@ export default function Members() {
     }
   }
 
+  async function openTransferModal(member) {
+    const res = await fetch("/api/groups/all", {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    const data = await res.json();
+    const coachGroupIds = groups.map((g) => g.id);
+    setOtherGroups(data.filter((g) => !coachGroupIds.includes(g.id)));
+    setTransferMember(member);
+    setSelectedGroup("");
+  }
+
+  async function handleTransfer() {
+    const res = await fetch(`/api/members/${transferMember.id}`, {
+      method: "PATCH",
+      headers: { Authorization: `Bearer ${token}` },
+      body: JSON.stringify({ group_id: parseInt(selectedGroup) }),
+    });
+
+    if (res.ok) {
+      setMembers(members.filter((m) => m.id !== transferMember.id));
+      setTransferMember(null);
+      setShowTransferSuccess(true);
+    }
+  }
+
   return (
     <div className="users-container">
       {deleteId && (
@@ -67,6 +96,49 @@ export default function Members() {
           message="Član je uspešno obrisan."
           onClose={() => setShowDeleteSuccess(false)}
         />
+      )}
+      {showTransferSuccess && (
+        <Modal
+          message="Član je uspešno premešten u drugu grupu."
+          onClose={() => setShowTransferSuccess(false)}
+        />
+      )}
+      {transferMember && (
+        <div className="modal-overlay">
+          <div className="modal">
+            <p className="modal-message">
+              Premesti {transferMember.name} {transferMember.last_name} u drugu
+              grupu:
+            </p>
+            <select
+              className="form-input"
+              value={selectedGroup}
+              onChange={(e) => setSelectedGroup(e.target.value)}
+            >
+              <option value="">Izaberi grupu</option>
+              {otherGroups.map((group) => (
+                <option key={group.id} value={group.id}>
+                  {group.name}
+                </option>
+              ))}
+            </select>
+            <div className="modal-buttons" style={{ marginTop: "16px" }}>
+              <button
+                className="btn-primary"
+                onClick={() => setTransferMember(null)}
+              >
+                Otkaži
+              </button>
+              <button
+                className="btn-primary"
+                onClick={handleTransfer}
+                disabled={!selectedGroup}
+              >
+                Premesti
+              </button>
+            </div>
+          </div>
+        </div>
       )}
       <div className="page-header">
         <h1 className="page-title">Članovi</h1>
@@ -106,6 +178,7 @@ export default function Members() {
             <th>Prezime</th>
             <th>Godište</th>
             <th>Grupa</th>
+            <th>Dodatne akcije</th>
             <th>Akcije</th>
           </tr>
         </thead>
@@ -124,10 +197,19 @@ export default function Members() {
               <td>
                 <button
                   className="btn-primary btn-sm"
+                  onClick={() => openTransferModal(member)}
+                >
+                  Premesti
+                </button>
+              </td>
+              <td>
+                <button
+                  className="btn-primary btn-sm"
                   onClick={() => navigate(`/members/edit/${member.id}`)}
                 >
                   Izmeni
                 </button>
+
                 <button
                   className="btn-danger btn-sm"
                   onClick={() => setDeleteId(member.id)}

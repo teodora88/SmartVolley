@@ -10,6 +10,7 @@ use App\Http\Controllers\MemberNoteController;
 use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\TournamentRegistrationController;
 use App\Http\Controllers\UserController;
+use App\Models\Group;
 use App\Models\User;
 use Illuminate\Support\Facades\Route;
 
@@ -24,6 +25,11 @@ Route::middleware('auth:sanctum')->group(function () {
   Route::get('/parents', function () {
     return response()->json(
       User::where('role_as', 'parent')->get()
+    );
+  });
+  Route::get('/groups/all', function () {
+    return response()->json(
+      Group::all()
     );
   });
   Route::apiResource('locations', LocationController::class);

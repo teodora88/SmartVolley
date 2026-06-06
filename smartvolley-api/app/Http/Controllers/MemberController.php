@@ -144,6 +144,36 @@ class MemberController extends Controller
             ]);
         }
 
+        // ako trener salje samo group_id - premestanje u tudju grupu
+        if ($request->has('group_id') && count($request->all()) === 1) {
+            $fields = $request->validate([
+                'group_id' => 'required|exists:groups,id',
+            ]);
+
+            // proveravamo da nova grupa ne pripada ovom treneru
+            $coachGroupIds = Group::where('user_id', $request->user()->id)->pluck('id');
+            if ($coachGroupIds->contains($fields['group_id'])) {
+                return response()->json([
+                    'message' => 'Koristite opciju izmeni za prebacivanje u sopstvenu grupu!'
+                ], 422);
+            }
+
+            // brisemo predstojeće attendance redove
+            Attendance::where('member_id', $member->id)
+                ->whereHas('activity', function ($query) {
+                    $query->where('status', 'scheduled');
+                })
+                ->delete();
+
+            $member->update($fields);
+
+            return response()->json([
+                'message' => 'Član je uspešno premešten u drugu grupu.',
+                'member' => $member,
+            ]);
+        }
+
+        // regularna izmena - samo za clanove sopstvene grupe
         $coachGroupIds = Group::where('user_id', $request->user()->id)->pluck('id');
         if (!$coachGroupIds->contains($member->group_id)) {
             return response()->json([
