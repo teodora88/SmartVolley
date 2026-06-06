@@ -72,6 +72,9 @@ export default function Layout() {
                     <Link to="/attendances">Prisutnosti</Link>
                   </li>
                   <li>
+                    <Link to="/payments">Uplate</Link>
+                  </li>
+                  <li>
                     <Link to="/groups">Grupe</Link>
                   </li>
                   <li>

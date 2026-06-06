@@ -21,6 +21,7 @@ import CreateMember from "./pages/CreateMember";
 import EditMember from "./pages/EditMember";
 import CreateLocation from "./pages/CreateLocation";
 import EditLocation from "./pages/EditLocation";
+import Payments from "./pages/Payments";
 
 export default function App() {
   const { user } = useContext(AppContext);
@@ -90,6 +91,10 @@ export default function App() {
           <Route
             path="/attendances"
             element={isCoach ? <Attendances /> : <Navigate to="/login" />}
+          />
+          <Route
+            path="/payments"
+            element={isCoach ? <Payments /> : <Navigate to="/login" />}
           />
 
           <Route

@@ -30,7 +30,8 @@ class PaymentController extends Controller
                 ], 403);
             }
 
-            $payments = Payment::whereIn('member_id', $memberIds)
+            $payments = Payment::with('member')
+                ->whereIn('member_id', $memberIds)
                 ->when($request->member_id, function ($query, $memberId) {
                     return $query->where('member_id', $memberId);
                 })
@@ -48,7 +49,8 @@ class PaymentController extends Controller
         $coachGroupIds = Group::where('user_id', $request->user()->id)->pluck('id');
         $memberIds = Member::whereIn('group_id', $coachGroupIds)->pluck('id');
 
-        $payments = Payment::whereIn('member_id', $memberIds)
+        $payments = Payment::with('member')
+            ->whereIn('member_id', $memberIds)
             ->when($request->member_id, function ($query, $memberId) {
                 return $query->where('member_id', $memberId);
             })
