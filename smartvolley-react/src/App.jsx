@@ -13,6 +13,7 @@ import CreateActivity from "./pages/CreateActivity";
 import EditActivity from "./pages/EditActivity";
 import ActivityAttendance from "./pages/ActivityAttendance";
 import Attendances from "./pages/Attendances";
+import TournamentRegistrations from "./pages/TournamentRegistrations";
 import Groups from "./pages/Groups";
 import CreateGroup from "./pages/CreateGroup";
 import EditGroup from "./pages/EditGroup";
@@ -54,7 +55,6 @@ export default function App() {
             path="/profile"
             element={user ? <Profile /> : <Navigate to="/login" />}
           />
-
           {/* Admin rute */}
           <Route
             path="/users"
@@ -68,7 +68,6 @@ export default function App() {
             path="/users/edit/:id"
             element={user ? <EditUser /> : <Navigate to="/login" />}
           />
-
           {/* Trener rute */}
           <Route
             path="/activities"
@@ -96,7 +95,12 @@ export default function App() {
             path="/payments"
             element={isCoach ? <Payments /> : <Navigate to="/login" />}
           />
-
+          <Route
+            path="/activities/:id/registrations"
+            element={
+              isCoach ? <TournamentRegistrations /> : <Navigate to="/login" />
+            }
+          />
           <Route
             path="/groups"
             element={isCoach ? <Groups /> : <Navigate to="/login" />}

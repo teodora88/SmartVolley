@@ -32,7 +32,8 @@ class TournamentRegistrationController extends Controller
                 ], 403);
             }
 
-            $registrations = TournamentRegistration::whereIn('member_id', $memberIds)
+            $registrations = TournamentRegistration::with('member', 'activity')
+                ->whereIn('member_id', $memberIds)
                 ->when($request->member_id, function ($query, $memberId) {
                     return $query->where('member_id', $memberId);
                 })
@@ -49,7 +50,8 @@ class TournamentRegistrationController extends Controller
             ->where('type', ActivityType::TOURNAMENT)
             ->pluck('id');
 
-        $registrations = TournamentRegistration::whereIn('activity_id', $activityIds)
+        $registrations = TournamentRegistration::with('member', 'activity')
+            ->whereIn('activity_id', $activityIds)
             ->when($request->activity_id, function ($query, $activityId) {
                 return $query->where('activity_id', $activityId);
             })
@@ -60,7 +62,6 @@ class TournamentRegistrationController extends Controller
 
         return response()->json($registrations);
     }
-
     /**
      * Store a newly created resource in storage.
      */
