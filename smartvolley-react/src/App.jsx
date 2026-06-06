@@ -18,7 +18,7 @@ import CreateGroup from "./pages/CreateGroup";
 import EditGroup from "./pages/EditGroup";
 import Members from "./pages/Members";
 import CreateMember from "./pages/CreateMember";
-import EditMember from "./pages/EditMember";
+import MemberDetails from "./pages/MemberDetails";
 import CreateLocation from "./pages/CreateLocation";
 import EditLocation from "./pages/EditLocation";
 import Payments from "./pages/Payments";
@@ -118,8 +118,8 @@ export default function App() {
             element={isCoach ? <CreateMember /> : <Navigate to="/login" />}
           />
           <Route
-            path="/members/edit/:id"
-            element={isCoach ? <EditMember /> : <Navigate to="/login" />}
+            path="/members/:id"
+            element={isCoach ? <MemberDetails /> : <Navigate to="/login" />}
           />
           <Route
             path="/locations"

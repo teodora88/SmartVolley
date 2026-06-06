@@ -81,6 +81,11 @@ body {
   margin-right: 6px;
 }
 
+.btn-primary:disabled {
+  background-color: #94a3b8;
+  cursor: not-allowed;
+}
+
 /* Inputi */
 .form-input {
   width: 100%;
@@ -175,4 +180,19 @@ body {
 
 .data-table tbody tr:hover {
   background-color: #f0f8ff;
+}
+
+.note-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 12px 0;
+  border-bottom: 1px solid #e2e8f0;
+  gap: 16px;
+}
+
+.note-body {
+  color: #03045e;
+  font-size: 14px;
+  flex: 1;
 }

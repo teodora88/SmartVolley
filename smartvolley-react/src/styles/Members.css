@@ -1,0 +1,14 @@
+.member-details-container {
+    display: flex;
+    gap: 24px;
+    padding: 24px;
+    align-items: flex-start;
+}
+
+.member-left {
+    flex: 1;
+}
+
+.member-right {
+    flex: 2;
+}

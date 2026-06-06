@@ -6,6 +6,7 @@ export default function MemberForm({
   submitLabel,
   groups,
   parents,
+  disabled,
 }) {
   return (
     <form onSubmit={onSubmit} className="form-body">
@@ -97,7 +98,11 @@ export default function MemberForm({
         </select>
         {errors.user_id && <p className="error">{errors.user_id[0]}</p>}
       </div>
-      <button className="btn-primary btn-full" type="submit">
+      <button
+        className="btn-primary btn-full"
+        type="submit"
+        disabled={disabled}
+      >
         {submitLabel}
       </button>
     </form>

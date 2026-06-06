@@ -205,9 +205,9 @@ export default function Members() {
               <td>
                 <button
                   className="btn-primary btn-sm"
-                  onClick={() => navigate(`/members/edit/${member.id}`)}
+                  onClick={() => navigate(`/members/${member.id}`)}
                 >
-                  Izmeni
+                  Detalji
                 </button>
 
                 <button
