@@ -26,7 +26,7 @@ import Payments from "./pages/Payments";
 import ParentActivities from "./pages/ParentActivities";
 import ParentAttendances from "./pages/ParentAttendances";
 import ParentPayments from "./pages/ParentPayments";
-import ParentEvaluations from "./pages/ParentEvaluations ";
+import ParentChildren from "./pages/ParentChildren";
 import ParentTournaments from "./pages/ParentTournaments";
 
 export default function App() {
@@ -161,9 +161,9 @@ export default function App() {
             element={isParent ? <ParentPayments /> : <Navigate to="/login" />}
           />
           <Route
-            path="/parent/evaluations"
+            path="/parent/children"
             element={
-              isParent ? <ParentEvaluations /> : <Navigate to="/login" />
+              isParent ? <ParentChildren /> : <Navigate to="/login" />
             }
           />
           <Route

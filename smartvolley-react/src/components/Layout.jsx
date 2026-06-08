@@ -101,7 +101,7 @@ export default function Layout() {
                     <Link to="/parent/payments">Uplate</Link>
                   </li>
                   <li>
-                    <Link to="/parent/evaluations">Evaluacije</Link>
+                    <Link to="/parent/children">Moja deca</Link>
                   </li>
                   <li>
                     <Link to="/parent/tournaments">Turniri</Link>

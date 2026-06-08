@@ -1,14 +1,19 @@
 .member-details-container {
-    display: flex;
-    gap: 24px;
-    padding: 24px;
-    align-items: flex-start;
+  display: flex;
+  gap: 24px;
+  padding: 24px;
+  align-items: flex-start;
 }
 
 .member-left {
-    flex: 1;
+  flex: 1;
 }
 
 .member-right {
-    flex: 2;
+  flex: 2;
+}
+
+.notes-scroll {
+    max-height: 330px;
+    overflow-y: auto;
 }
