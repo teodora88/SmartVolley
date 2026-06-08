@@ -51,17 +51,23 @@ export default function ParentActivities() {
     getActivities();
   }, [typeFilter, statusFilter, monthFilter]);
 
-  function getChildForActivity(activity) {
-    const child = children.find((c) => c.group_id === activity.group_id);
-    return child ? `${child.name} ${child.last_name}` : "-";
-  }
-
-  const filtered = childFilter
-    ? activities.filter((a) => {
-        const child = children.find((c) => c.group_id === a.group_id);
-        return child && child.id === parseInt(childFilter);
-      })
-    : activities;
+  const filtered = children
+    .flatMap((child) =>
+      activities
+        .filter((a) => {
+          if (a.group_id !== child.group_id) return false;
+          return new Date(a.date) >= new Date(child.created_at.split("T")[0]);
+        })
+        .filter((a) => !typeFilter || a.type === typeFilter)
+        .filter((a) => !statusFilter || a.status === statusFilter)
+        .filter((a) => {
+          if (!monthFilter) return true;
+          return new Date(a.date).getMonth() + 1 === parseInt(monthFilter);
+        })
+        .filter(() => !childFilter || child.id === parseInt(childFilter))
+        .map((a) => ({ ...a, childName: `${child.name} ${child.last_name}` })),
+    )
+    .sort((a, b) => new Date(b.date) - new Date(a.date));
 
   return (
     <div className="users-container">
@@ -136,9 +142,9 @@ export default function ParentActivities() {
         </thead>
         <tbody>
           {filtered.map((activity, index) => (
-            <tr key={activity.id}>
+            <tr key={`${activity.id}-${activity.childName}`}>
               <td>{index + 1}</td>
-              <td>{getChildForActivity(activity)}</td>
+              <td>{activity.childName}</td>
               <td>{typeLabels[activity.type]}</td>
               <td>{formatDate(activity.date)}</td>
               <td>{activity.time ? activity.time.substring(0, 5) : "-"}</td>
