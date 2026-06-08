@@ -88,6 +88,29 @@ export default function Layout() {
                   </li>
                 </>
               )}
+
+              {user?.role_as === "parent" && (
+                <>
+                  <li>
+                    <Link to="/activities">Aktivnosti</Link>
+                  </li>
+                  <li>
+                    <Link to="/attendances">Prisutnosti</Link>
+                  </li>
+                  <li>
+                    <Link to="/payments">Uplate</Link>
+                  </li>
+                  <li>
+                    <Link to="/parent/evaluations">Evaluacije</Link>
+                  </li>
+                  <li>
+                    <Link to="/parent/tournaments">Turniri</Link>
+                  </li>
+                  <li>
+                    <Link to="/profile">Moj profil</Link>
+                  </li>
+                </>
+              )}
             </ul>
           </div>
           <button className="btn-primary" onClick={handleLogout}>

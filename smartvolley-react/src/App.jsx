@@ -23,12 +23,18 @@ import MemberDetails from "./pages/MemberDetails";
 import CreateLocation from "./pages/CreateLocation";
 import EditLocation from "./pages/EditLocation";
 import Payments from "./pages/Payments";
+import ParentActivities from "./pages/ParentActivities";
+import ParentAttendances from "./pages/ParentAttendances";
+import ParentPayments from "./pages/ParentPayments";
+import ParentEvaluations from "./pages/ParentEvaluations ";
+import ParentTournaments from "./pages/ParentTournaments";
 
 export default function App() {
   const { user } = useContext(AppContext);
 
   const isAdmin = user?.role_as === "admin";
   const isCoach = user?.role_as === "coach";
+  const isParent = user?.role_as === "parent";
 
   return (
     <BrowserRouter>
@@ -40,8 +46,10 @@ export default function App() {
             user ? (
               isAdmin ? (
                 <Navigate to="/users" />
-              ) : (
+              ) : isCoach ? (
                 <Navigate to="/activities" />
+              ) : (
+                <Navigate to="/parent/activities" />
               )
             ) : (
               <Login />
@@ -55,6 +63,10 @@ export default function App() {
             path="/profile"
             element={user ? <Profile /> : <Navigate to="/login" />}
           />
+          <Route
+            path="/users/edit/:id"
+            element={user ? <EditUser /> : <Navigate to="/login" />}
+          />
           {/* Admin rute */}
           <Route
             path="/users"
@@ -63,10 +75,6 @@ export default function App() {
           <Route
             path="/users/create"
             element={isAdmin ? <CreateUser /> : <Navigate to="/login" />}
-          />
-          <Route
-            path="/users/edit/:id"
-            element={user ? <EditUser /> : <Navigate to="/login" />}
           />
           {/* Trener rute */}
           <Route
@@ -136,6 +144,33 @@ export default function App() {
           <Route
             path="/locations/edit/:id"
             element={isCoach ? <EditLocation /> : <Navigate to="/login" />}
+          />
+          {/* Roditelj rute */}
+          <Route
+            path="/parent/activities"
+            element={isParent ? <ParentActivities /> : <Navigate to="/login" />}
+          />
+          <Route
+            path="/parent/attendances"
+            element={
+              isParent ? <ParentAttendances /> : <Navigate to="/login" />
+            }
+          />
+          <Route
+            path="/parent/payments"
+            element={isParent ? <ParentPayments /> : <Navigate to="/login" />}
+          />
+          <Route
+            path="/parent/evaluations"
+            element={
+              isParent ? <ParentEvaluations /> : <Navigate to="/login" />
+            }
+          />
+          <Route
+            path="/parent/tournaments"
+            element={
+              isParent ? <ParentTournaments /> : <Navigate to="/login" />
+            }
           />
         </Route>
       </Routes>
