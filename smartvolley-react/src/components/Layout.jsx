@@ -92,13 +92,13 @@ export default function Layout() {
               {user?.role_as === "parent" && (
                 <>
                   <li>
-                    <Link to="/activities">Aktivnosti</Link>
+                    <Link to="/parent/activities">Aktivnosti</Link>
                   </li>
                   <li>
-                    <Link to="/attendances">Prisutnosti</Link>
+                    <Link to="/parent/attendances">Prisutnosti</Link>
                   </li>
                   <li>
-                    <Link to="/payments">Uplate</Link>
+                    <Link to="/parent/payments">Uplate</Link>
                   </li>
                   <li>
                     <Link to="/parent/evaluations">Evaluacije</Link>
