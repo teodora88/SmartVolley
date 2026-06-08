@@ -2,7 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\ActivityStatus;
+use App\Enums\ActivityType;
 use App\Enums\UserRole;
+use App\Models\Activity;
 use App\Models\Attendance;
 use App\Models\Group;
 use App\Models\Member;
@@ -76,6 +79,20 @@ class MemberController extends Controller
         }
 
         $member = Member::create($fields);
+
+        // kreiraj attendance za sve zakazane treninge grupe
+        $scheduledPractices = Activity::where('group_id', $fields['group_id'])
+            ->where('type', ActivityType::PRACTICE)
+            ->where('status', ActivityStatus::SCHEDULED)
+            ->get();
+
+        foreach ($scheduledPractices as $activity) {
+            Attendance::create([
+                'activity_id' => $activity->id,
+                'member_id' => $member->id,
+                'is_present' => null,
+            ]);
+        }
 
         return response()->json([
             'message' => 'Član je uspešno kreiran.',
@@ -158,7 +175,7 @@ class MemberController extends Controller
                 ], 422);
             }
 
-            // brisemo predstojeće attendance redove
+            // brisemo zakazane attendance redove stare grupe
             Attendance::where('member_id', $member->id)
                 ->whereHas('activity', function ($query) {
                     $query->where('status', 'scheduled');
@@ -166,6 +183,20 @@ class MemberController extends Controller
                 ->delete();
 
             $member->update($fields);
+
+            // kreiraj attendance za zakazane treninge nove grupe
+            $scheduledPractices = Activity::where('group_id', $fields['group_id'])
+                ->where('type', ActivityType::PRACTICE)
+                ->where('status', ActivityStatus::SCHEDULED)
+                ->get();
+
+            foreach ($scheduledPractices as $activity) {
+                Attendance::create([
+                    'activity_id' => $activity->id,
+                    'member_id' => $member->id,
+                    'is_present' => null,
+                ]);
+            }
 
             return response()->json([
                 'message' => 'Član je uspešno premešten u drugu grupu.',
@@ -191,14 +222,27 @@ class MemberController extends Controller
             'group_id' => 'nullable|exists:groups,id',
         ]);
 
-        // ako se menja grupa, obrisi predstojeće attendance redove
-        // kako član ne bi ostao na spisku stare grupe
+        // ako se menja grupa, obrisi zakazane attendance redove stare grupe
+        // i kreiraj nove za zakazane treninge nove grupe
         if (isset($fields['group_id']) && $fields['group_id'] != $member->group_id) {
             Attendance::where('member_id', $member->id)
                 ->whereHas('activity', function ($query) {
                     $query->where('status', 'scheduled');
                 })
                 ->delete();
+
+            $scheduledPractices = Activity::where('group_id', $fields['group_id'])
+                ->where('type', ActivityType::PRACTICE)
+                ->where('status', ActivityStatus::SCHEDULED)
+                ->get();
+
+            foreach ($scheduledPractices as $activity) {
+                Attendance::create([
+                    'activity_id' => $activity->id,
+                    'member_id' => $member->id,
+                    'is_present' => null,
+                ]);
+            }
         }
 
         $member->update($fields);
@@ -208,6 +252,7 @@ class MemberController extends Controller
             'member' => $member,
         ]);
     }
+
 
     /**
      * Remove the specified resource from storage.
