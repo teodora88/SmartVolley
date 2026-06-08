@@ -7,15 +7,22 @@ export default function Payments() {
   const { token } = useContext(AppContext);
   const [payments, setPayments] = useState([]);
   const [groups, setGroups] = useState([]);
+  const [members, setMembers] = useState([]);
   const [memberSearch, setMemberSearch] = useState("");
   const [monthFilter, setMonthFilter] = useState("");
   const [isPaidFilter, setIsPaidFilter] = useState("");
   const [showMonthlyModal, setShowMonthlyModal] = useState(false);
+  const [showSingleModal, setShowSingleModal] = useState(false);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [successMessage, setSuccessMessage] = useState("");
   const [errorMessage, setErrorMessage] = useState(null);
   const [monthlyForm, setMonthlyForm] = useState({
     group_id: "",
+    month: "",
+    price: "",
+  });
+  const [singleForm, setSingleForm] = useState({
+    member_id: "",
     month: "",
     price: "",
   });
@@ -28,7 +35,17 @@ export default function Payments() {
       const data = await res.json();
       setGroups(data);
     }
+
+    async function getMembers() {
+      const res = await fetch("/api/members", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const data = await res.json();
+      setMembers(data);
+    }
+
     getGroups();
+    getMembers();
   }, []);
 
   async function getPayments() {
@@ -96,6 +113,23 @@ export default function Payments() {
     } else if (res.ok) {
       setShowMonthlyModal(false);
       setSuccessMessage("Mesečne uplate su uspešno kreirane.");
+      setShowSuccessModal(true);
+      getPayments();
+    }
+  }
+
+  async function handleCreateSingle(e) {
+    e.preventDefault();
+
+    const res = await fetch("/api/payments", {
+      method: "POST",
+      headers: { Authorization: `Bearer ${token}` },
+      body: JSON.stringify(singleForm),
+    });
+
+    if (res.ok) {
+      setShowSingleModal(false);
+      setSuccessMessage("Uplata je uspešno kreirana.");
       setShowSuccessModal(true);
       getPayments();
     }
@@ -177,14 +211,87 @@ export default function Payments() {
           </div>
         </div>
       )}
+      {showSingleModal && (
+        <div className="modal-overlay">
+          <div className="modal">
+            <p className="modal-message">Dodaj uplatu</p>
+            <form onSubmit={handleCreateSingle} className="form-body">
+              <select
+                className="form-input"
+                value={singleForm.member_id}
+                onChange={(e) =>
+                  setSingleForm({ ...singleForm, member_id: e.target.value })
+                }
+              >
+                <option value="">Izaberi člana</option>
+                {members.map((member) => (
+                  <option key={member.id} value={member.id}>
+                    {member.name} {member.last_name}
+                  </option>
+                ))}
+              </select>
+              <select
+                className="form-input"
+                value={singleForm.month}
+                onChange={(e) =>
+                  setSingleForm({ ...singleForm, month: e.target.value })
+                }
+              >
+                <option value="">Izaberi mesec</option>
+                <option value="01-2026">Januar 2026</option>
+                <option value="02-2026">Februar 2026</option>
+                <option value="03-2026">Mart 2026</option>
+                <option value="04-2026">April 2026</option>
+                <option value="05-2026">Maj 2026</option>
+                <option value="06-2026">Jun 2026</option>
+                <option value="07-2026">Jul 2026</option>
+                <option value="08-2026">Avgust 2026</option>
+                <option value="09-2026">Septembar 2026</option>
+                <option value="10-2026">Oktobar 2026</option>
+                <option value="11-2026">Novembar 2026</option>
+                <option value="12-2026">Decembar 2026</option>
+              </select>
+              <input
+                className="form-input"
+                type="number"
+                placeholder="Iznos (RSD)"
+                value={singleForm.price}
+                onChange={(e) =>
+                  setSingleForm({ ...singleForm, price: e.target.value })
+                }
+              />
+              <div className="modal-buttons" style={{ marginTop: "16px" }}>
+                <button
+                  type="button"
+                  className="btn-primary"
+                  onClick={() => setShowSingleModal(false)}
+                >
+                  Otkaži
+                </button>
+                <button type="submit" className="btn-primary">
+                  Dodaj
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
       <div className="page-header">
         <h1 className="page-title">Uplate</h1>
-        <button
-          className="btn-primary"
-          onClick={() => setShowMonthlyModal(true)}
-        >
-          Kreiraj mesečne uplate
-        </button>
+        <div style={{ display: "flex", gap: "8px" }}>
+          <button
+            className="btn-primary"
+            onClick={() => setShowSingleModal(true)}
+          >
+            Dodaj uplatu
+          </button>
+          <button
+            className="btn-primary"
+            onClick={() => setShowMonthlyModal(true)}
+          >
+            Kreiraj mesečne uplate
+          </button>
+        </div>
       </div>
       <div className="users-filters">
         <input
