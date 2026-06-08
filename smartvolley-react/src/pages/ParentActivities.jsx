@@ -1,6 +1,161 @@
-export default  function ParentActivities() {
-  return (
-    <div>ParentActivities</div>
-  )
-}
+import { useEffect, useState, useContext } from "react";
+import { AppContext } from "../context/AppContext";
+import { formatDate } from "../utils/formatDate";
 
+export default function ParentActivities() {
+  const { token } = useContext(AppContext);
+  const [activities, setActivities] = useState([]);
+  const [children, setChildren] = useState([]);
+  const [childFilter, setChildFilter] = useState("");
+  const [typeFilter, setTypeFilter] = useState("");
+  const [statusFilter, setStatusFilter] = useState("");
+  const [monthFilter, setMonthFilter] = useState("");
+
+  const typeLabels = {
+    practice: "Trening",
+    game: "Utakmica",
+    tournament: "Turnir",
+  };
+
+  const statusLabels = {
+    scheduled: "Zakazan/a",
+    canceled: "Otkazan/a",
+    postponed: "Odložen/a",
+    completed: "Završen/a",
+  };
+
+  useEffect(() => {
+    async function getChildren() {
+      const res = await fetch("/api/members", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const data = await res.json();
+      setChildren(data);
+    }
+    getChildren();
+  }, []);
+
+  useEffect(() => {
+    async function getActivities() {
+      const params = new URLSearchParams();
+      if (typeFilter) params.append("type", typeFilter);
+      if (statusFilter) params.append("status", statusFilter);
+      if (monthFilter) params.append("month", monthFilter);
+
+      const res = await fetch(`/api/activities?${params}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const data = await res.json();
+      setActivities(data.sort((a, b) => new Date(b.date) - new Date(a.date)));
+    }
+    getActivities();
+  }, [typeFilter, statusFilter, monthFilter]);
+
+  function getChildForActivity(activity) {
+    const child = children.find((c) => c.group_id === activity.group_id);
+    return child ? `${child.name} ${child.last_name}` : "-";
+  }
+
+  const filtered = childFilter
+    ? activities.filter((a) => {
+        const child = children.find((c) => c.group_id === a.group_id);
+        return child && child.id === parseInt(childFilter);
+      })
+    : activities;
+
+  return (
+    <div className="users-container">
+      <h1 className="page-title">Aktivnosti</h1>
+      <div className="users-filters">
+        {children.length > 1 && (
+          <select
+            className="filter-select"
+            value={childFilter}
+            onChange={(e) => setChildFilter(e.target.value)}
+          >
+            <option value="">Sva deca</option>
+            {children.map((child) => (
+              <option key={child.id} value={child.id}>
+                {child.name} {child.last_name}
+              </option>
+            ))}
+          </select>
+        )}
+        <select
+          className="filter-select"
+          value={typeFilter}
+          onChange={(e) => setTypeFilter(e.target.value)}
+        >
+          <option value="">Svi tipovi</option>
+          <option value="practice">Trening</option>
+          <option value="game">Utakmica</option>
+          <option value="tournament">Turnir</option>
+        </select>
+        <select
+          className="filter-select"
+          value={statusFilter}
+          onChange={(e) => setStatusFilter(e.target.value)}
+        >
+          <option value="">Svi statusi</option>
+          <option value="scheduled">Zakazan/a</option>
+          <option value="canceled">Otkazan/a</option>
+          <option value="postponed">Odložen/a</option>
+          <option value="completed">Završen/a</option>
+        </select>
+        <select
+          className="filter-select"
+          value={monthFilter}
+          onChange={(e) => setMonthFilter(e.target.value)}
+        >
+          <option value="">Svi meseci</option>
+          <option value="1">Januar</option>
+          <option value="2">Februar</option>
+          <option value="3">Mart</option>
+          <option value="4">April</option>
+          <option value="5">Maj</option>
+          <option value="6">Jun</option>
+          <option value="7">Jul</option>
+          <option value="8">Avgust</option>
+          <option value="9">Septembar</option>
+          <option value="10">Oktobar</option>
+          <option value="11">Novembar</option>
+          <option value="12">Decembar</option>
+        </select>
+      </div>
+      <table className="data-table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Dete</th>
+            <th>Tip</th>
+            <th>Datum</th>
+            <th>Vreme</th>
+            <th>Lokacija</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          {filtered.map((activity, index) => (
+            <tr key={activity.id}>
+              <td>{index + 1}</td>
+              <td>{getChildForActivity(activity)}</td>
+              <td>{typeLabels[activity.type]}</td>
+              <td>{formatDate(activity.date)}</td>
+              <td>{activity.time ? activity.time.substring(0, 5) : "-"}</td>
+              <td>
+                {activity.location
+                  ? activity.location.name
+                  : (activity.other_location ?? "-")}
+              </td>
+              <td>
+                <span className={`status-badge status-${activity.status}`}>
+                  {statusLabels[activity.status]}
+                </span>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+}
