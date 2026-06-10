@@ -171,37 +171,38 @@ export default function ParentAttendances() {
                 )}
               </td>
               <td>
-                {editingExcuse === attendance.id ? (
-                  <>
+                {attendance.is_present !== 1 &&
+                  (editingExcuse === attendance.id ? (
+                    <>
+                      <button
+                        className="btn-primary btn-sm"
+                        onClick={() => handleSaveExcuse(attendance.id)}
+                      >
+                        Sačuvaj
+                      </button>
+                      <button
+                        className="btn-danger btn-sm"
+                        onClick={() => {
+                          setEditingExcuse(null);
+                          setExcuseText("");
+                        }}
+                      >
+                        Otkaži
+                      </button>
+                    </>
+                  ) : (
                     <button
                       className="btn-primary btn-sm"
-                      onClick={() => handleSaveExcuse(attendance.id)}
-                    >
-                      Sačuvaj
-                    </button>
-                    <button
-                      className="btn-danger btn-sm"
                       onClick={() => {
-                        setEditingExcuse(null);
-                        setExcuseText("");
+                        setEditingExcuse(attendance.id);
+                        setExcuseText(attendance.excuse ?? "");
                       }}
                     >
-                      Otkaži
+                      {attendance.excuse
+                        ? "Izmeni opravdanje"
+                        : "Dodaj opravdanje"}
                     </button>
-                  </>
-                ) : (
-                  <button
-                    className="btn-primary btn-sm"
-                    onClick={() => {
-                      setEditingExcuse(attendance.id);
-                      setExcuseText(attendance.excuse ?? "");
-                    }}
-                  >
-                    {attendance.excuse
-                      ? "Izmeni opravdanje"
-                      : "Dodaj opravdanje"}
-                  </button>
-                )}
+                  ))}
               </td>
             </tr>
           ))}
