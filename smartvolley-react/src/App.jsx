@@ -27,7 +27,6 @@ import ParentActivities from "./pages/ParentActivities";
 import ParentAttendances from "./pages/ParentAttendances";
 import ParentPayments from "./pages/ParentPayments";
 import ParentChildren from "./pages/ParentChildren";
-import ParentTournaments from "./pages/ParentTournaments";
 
 export default function App() {
   const { user } = useContext(AppContext);
@@ -166,12 +165,7 @@ export default function App() {
               isParent ? <ParentChildren /> : <Navigate to="/login" />
             }
           />
-          <Route
-            path="/parent/tournaments"
-            element={
-              isParent ? <ParentTournaments /> : <Navigate to="/login" />
-            }
-          />
+          
         </Route>
       </Routes>
     </BrowserRouter>

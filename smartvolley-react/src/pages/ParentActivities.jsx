@@ -6,6 +6,7 @@ export default function ParentActivities() {
   const { token } = useContext(AppContext);
   const [activities, setActivities] = useState([]);
   const [children, setChildren] = useState([]);
+  const [registrations, setRegistrations] = useState([]);
   const [childFilter, setChildFilter] = useState("");
   const [typeFilter, setTypeFilter] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
@@ -32,7 +33,17 @@ export default function ParentActivities() {
       const data = await res.json();
       setChildren(data);
     }
+
+    async function getRegistrations() {
+      const res = await fetch("/api/tournament-registrations", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const data = await res.json();
+      setRegistrations(data);
+    }
+
     getChildren();
+    getRegistrations();
   }, []);
 
   useEffect(() => {
@@ -56,6 +67,11 @@ export default function ParentActivities() {
       activities
         .filter((a) => {
           if (a.group_id !== child.group_id) return false;
+          if (a.type === "tournament") {
+            return registrations.some(
+              (r) => r.activity_id === a.id && r.member_id === child.id,
+            );
+          }
           return new Date(a.date) >= new Date(child.created_at.split("T")[0]);
         })
         .filter((a) => !typeFilter || a.type === typeFilter)
@@ -65,9 +81,39 @@ export default function ParentActivities() {
           return new Date(a.date).getMonth() + 1 === parseInt(monthFilter);
         })
         .filter(() => !childFilter || child.id === parseInt(childFilter))
-        .map((a) => ({ ...a, childName: `${child.name} ${child.last_name}` })),
+        .map((a) => ({
+          ...a,
+          childName: `${child.name} ${child.last_name}`,
+          childId: child.id,
+        })),
     )
     .sort((a, b) => new Date(b.date) - new Date(a.date));
+
+  function getRegistration(activityId, childId) {
+    return registrations.find(
+      (r) => r.activity_id === activityId && r.member_id === childId,
+    );
+  }
+
+  function isTournamentExpired(date) {
+    return new Date(date) < new Date();
+  }
+
+  async function handleRegister(registrationId, isRegistered) {
+    const res = await fetch(`/api/tournament-registrations/${registrationId}`, {
+      method: "PATCH",
+      headers: { Authorization: `Bearer ${token}` },
+      body: JSON.stringify({ is_registered: isRegistered }),
+    });
+
+    if (res.ok) {
+      setRegistrations(
+        registrations.map((r) =>
+          r.id === registrationId ? { ...r, is_registered: isRegistered } : r,
+        ),
+      );
+    }
+  }
 
   return (
     <div className="users-container">
@@ -138,28 +184,59 @@ export default function ParentActivities() {
             <th>Vreme</th>
             <th>Lokacija</th>
             <th>Status</th>
+            <th>Akcije</th>
           </tr>
         </thead>
         <tbody>
-          {filtered.map((activity, index) => (
-            <tr key={`${activity.id}-${activity.childName}`}>
-              <td>{index + 1}</td>
-              <td>{activity.childName}</td>
-              <td>{typeLabels[activity.type]}</td>
-              <td>{formatDate(activity.date)}</td>
-              <td>{activity.time ? activity.time.substring(0, 5) : "-"}</td>
-              <td>
-                {activity.location
-                  ? activity.location.name
-                  : (activity.other_location ?? "-")}
-              </td>
-              <td>
-                <span className={`status-badge status-${activity.status}`}>
-                  {statusLabels[activity.status]}
-                </span>
-              </td>
-            </tr>
-          ))}
+          {filtered.map((activity, index) => {
+            const registration =
+              activity.type === "tournament"
+                ? getRegistration(activity.id, activity.childId)
+                : null;
+
+            const tournamentExpired = isTournamentExpired(activity.date);
+
+            return (
+              <tr key={`${activity.id}-${activity.childName}`}>
+                <td>{index + 1}</td>
+                <td>{activity.childName}</td>
+                <td>{typeLabels[activity.type]}</td>
+                <td>{formatDate(activity.date)}</td>
+                <td>{activity.time ? activity.time.substring(0, 5) : "-"}</td>
+                <td>
+                  {activity.location
+                    ? activity.location.name
+                    : (activity.other_location ?? "-")}
+                </td>
+                <td>
+                  <span className={`status-badge status-${activity.status}`}>
+                    {statusLabels[activity.status]}
+                  </span>
+                </td>
+                <td>
+                  {activity.type === "tournament" &&
+                    registration &&
+                    (registration.is_registered ? (
+                      <button
+                        className="btn-danger btn-sm"
+                        disabled={tournamentExpired}
+                        onClick={() => handleRegister(registration.id, false)}
+                      >
+                        Odjavi se
+                      </button>
+                    ) : (
+                      <button
+                        className="btn-primary btn-sm"
+                        disabled={tournamentExpired}
+                        onClick={() => handleRegister(registration.id, true)}
+                      >
+                        Prijavi se
+                      </button>
+                    ))}
+                </td>
+              </tr>
+            );
+          })}
         </tbody>
       </table>
     </div>

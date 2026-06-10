@@ -104,9 +104,6 @@ export default function Layout() {
                     <Link to="/parent/children">Moja deca</Link>
                   </li>
                   <li>
-                    <Link to="/parent/tournaments">Turniri</Link>
-                  </li>
-                  <li>
                     <Link to="/profile">Moj profil</Link>
                   </li>
                 </>
