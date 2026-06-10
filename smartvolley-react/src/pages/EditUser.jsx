@@ -9,6 +9,8 @@ export default function EditUser() {
   const navigate = useNavigate();
   const { id } = useParams();
 
+  const isAdmin = user?.role_as === "admin";
+
   const [formData, setFormData] = useState({
     name: "",
     last_name: "",
@@ -48,6 +50,7 @@ export default function EditUser() {
 
     const dataToSend = { ...formData };
     if (!dataToSend.password) delete dataToSend.password;
+    if (!isAdmin) delete dataToSend.role_as;
 
     const res = await fetch(`/api/users/${id}`, {
       method: "PATCH",
@@ -74,7 +77,9 @@ export default function EditUser() {
       {showModal && (
         <Modal
           message="Podaci su uspešno izmenjeni."
-          onClose={() => user.id === parseInt(id) ? navigate("/profile") : navigate("/users")}
+          onClose={() =>
+            user.id === parseInt(id) ? navigate("/profile") : navigate("/users")
+          }
         />
       )}
       <h1 className="page-title">Izmeni korisnika</h1>
@@ -84,6 +89,7 @@ export default function EditUser() {
         errors={errors}
         onSubmit={handleEdit}
         submitLabel="Sačuvaj izmene"
+        showRole={isAdmin}
       />
     </div>
   );
