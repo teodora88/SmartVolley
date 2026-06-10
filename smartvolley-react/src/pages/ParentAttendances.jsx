@@ -44,8 +44,8 @@ export default function ParentAttendances() {
 
   const filtered = presenceFilter
     ? attendances.filter((a) => {
-        if (presenceFilter === "present") return a.is_present === true;
-        if (presenceFilter === "absent") return a.is_present === false;
+        if (presenceFilter === "present") return a.is_present == 1;
+        if (presenceFilter === "absent") return a.is_present == 0;
         if (presenceFilter === "null") return a.is_present === null;
         return true;
       })
