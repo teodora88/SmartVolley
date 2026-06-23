@@ -214,6 +214,15 @@ class ActivityController extends Controller
 
         $activity->update($fields);
 
+        if ($activity->status === ActivityStatus::CANCELED) {
+            if ($activity->type === ActivityType::PRACTICE) {
+                Attendance::where('activity_id', $activity->id)->delete();
+            }
+            if ($activity->type === ActivityType::TOURNAMENT) {
+                TournamentRegistration::where('activity_id', $activity->id)->delete();
+            }
+        }
+
         // kada trener zavodi prisutnost, proveravamo da li ima novih clanova
         // koji su se pridruzili grupi nakon kreiranja treninga
         // firstOrCreate - nam kreira novi red samo za nove clanove, nema dupliranja
