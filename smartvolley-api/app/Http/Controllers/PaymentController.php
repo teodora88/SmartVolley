@@ -175,13 +175,37 @@ class PaymentController extends Controller
      * Remove the specified resource from storage.
      */
 
-    // brisanje uplata nije dozvoljeno
+    // brisanje naplacenih uplata nije dozvoljeno
+    // brisanje neplacenih uplata je dozvoljeno 
     // uplata se automatski brise samo kada se obrise clan (cascadeOnDelete)
-    public function destroy(Payment $payment)
+    public function destroy(Payment $payment, Request $request)
     {
+        if ($request->user()->role_as !== UserRole::COACH) {
+            return response()->json([
+                'message' => 'Nemate pristup ovoj akciji!'
+            ], 403);
+        }
+
+        $coachGroupIds = Group::where('user_id', $request->user()->id)->pluck('id');
+        $memberIds = Member::whereIn('group_id', $coachGroupIds)->pluck('id');
+
+        if (!$memberIds->contains($payment->member_id)) {
+            return response()->json([
+                'message' => 'Nemate pristup ovoj akciji!'
+            ], 403);
+        }
+
+        if ($payment->is_paid) {
+            return response()->json([
+                'message' => 'Nije moguće obrisati plaćenu uplatu!'
+            ], 403);
+        }
+
+        $payment->delete();
+
         return response()->json([
-            'message' => 'Brisanje uplata nije dozvoljeno!'
-        ], 403);
+            'message' => 'Uplata je uspešno obrisana!'
+        ], 200);
     }
 
     public function createMonthlyPayments(Request $request)
