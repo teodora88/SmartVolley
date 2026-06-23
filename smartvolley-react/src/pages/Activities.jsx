@@ -177,7 +177,7 @@ export default function Activities() {
                 </span>
               </td>
               <td>
-                {activity.type === "practice" && (
+                {activity.type === "practice" && activity.status !== "canceled" && activity.status !== "completed" && (
                   <button
                     className="btn-primary btn-sm"
                     onClick={() =>
@@ -187,7 +187,7 @@ export default function Activities() {
                     Evidentiraj prisutnost
                   </button>
                 )}
-                {activity.type === "tournament" && (
+                {activity.type === "tournament" && activity.status !== "canceled" && activity.status !== "completed" && (
                   <button
                     className="btn-primary btn-sm"
                     onClick={() =>
